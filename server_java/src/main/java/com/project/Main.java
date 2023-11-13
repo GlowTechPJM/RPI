@@ -1,6 +1,10 @@
 package com.project;
 
 import java.util.Enumeration;
+
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.RaspiPin;
+
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -16,8 +20,8 @@ public class Main {
 
         // Deshabilitar SSLv3 per clients Android
         java.lang.System.setProperty("jdk.tls.client.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-
-        ChatServer server = new ChatServer(port);
+        Pin[] ledPinNumbers={RaspiPin.GPIO_00, RaspiPin.GPIO_01, RaspiPin.GPIO_02, RaspiPin.GPIO_03};
+        ChatServer server = new ChatServer(port,ledPinNumbers);
         server.runServerBucle();
     }
 
