@@ -14,7 +14,6 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
-import javafx.stage.Stage;
 
 public class ChatServer extends WebSocketServer {
 

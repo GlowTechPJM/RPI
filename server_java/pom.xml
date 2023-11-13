@@ -23,16 +23,6 @@
         </plugins>
     </build>
     <dependencies>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>11</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>11</version>
-        </dependency>  
         <!-- Dependency for Java WebSocket -->
         <dependency>
             <groupId>org.java-websocket</groupId>

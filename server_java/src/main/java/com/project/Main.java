@@ -1,10 +1,5 @@
 package com.project;
 
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import java.util.Enumeration;
 import java.io.IOException;
 import java.net.InetAddress;
@@ -22,10 +17,6 @@ public class Main {
 
         ChatServer server = new ChatServer(port);
         server.runServerBucle();
-    }
-
-    private void clearDisplayIPAddress() {
-
     }
 
     // Método para obtener la dirección IP de la WiFi
