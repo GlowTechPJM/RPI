@@ -4,6 +4,8 @@ import java.util.Enumeration;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 public class Main {
     public static void main (String[] args) throws InterruptedException, IOException {
@@ -20,23 +22,29 @@ public class Main {
     }
 
     // Método para obtener la dirección IP de la WiFi
-    private static String getWiFiIPAddress() {
-        try {
-            Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-            while (networkInterfaces.hasMoreElements()) {
-                NetworkInterface networkInterface = networkInterfaces.nextElement();
-                Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+    public static String getWiFiIPAddress() throws SocketException, UnknownHostException {
+        String wifiIp = "";
+        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
+        while (networkInterfaces.hasMoreElements()) {
+            NetworkInterface ni = networkInterfaces.nextElement();
+            if (ni.getName().toLowerCase().contains("wlan")) { // Filtra interfaces WiFi
+                Enumeration<InetAddress> inetAddresses = ni.getInetAddresses();
                 while (inetAddresses.hasMoreElements()) {
-                    InetAddress inetAddress = inetAddresses.nextElement();
-                    if (!inetAddress.isLoopbackAddress() && inetAddress.isSiteLocalAddress()) {
-                        return inetAddress.getHostAddress();
+                    InetAddress ia = inetAddresses.nextElement();
+                    if (!ia.isLinkLocalAddress() && !ia.isLoopbackAddress() && ia.isSiteLocalAddress()) {
+                        System.out.println(ni.getDisplayName() + ": " + ia.getHostAddress());
+                        wifiIp = ia.getHostAddress();
+                        // Si hay múltiples direcciones IP, se queda con la última
                     }
                 }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return "No se pudo encontrar la dirección IP WiFi";
+
+        // Si no encuentra ninguna dirección IP WiFi, retorna la loopback
+        if (wifiIp.isEmpty()) {
+            wifiIp = InetAddress.getLocalHost().getHostAddress();
+        }
+        return wifiIp;
     }
 
     
