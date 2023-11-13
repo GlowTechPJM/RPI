@@ -14,13 +14,28 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
+import com.pi4j.io.gpio.GpioController;
+import com.pi4j.io.gpio.GpioFactory;
+import com.pi4j.io.gpio.GpioPinDigitalOutput;
+import com.pi4j.io.gpio.Pin;
+import com.pi4j.io.gpio.PinState;
+
 
 public class ChatServer extends WebSocketServer {
 
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    private static GpioPinDigitalOutput[] ledPins;
 
-    public ChatServer (int port) {
+    public ChatServer (int port, Pin[] ledPinNumbers) {
         super(new InetSocketAddress(port));
+        // Inicializa los pines GPIO para los LEDs
+        GpioController gpioController = GpioFactory.getInstance();
+        ledPins = new GpioPinDigitalOutput[ledPinNumbers.length];
+
+        for (int i = 0; i < ledPinNumbers.length; i++) {
+            ledPins[i] = gpioController.provisionDigitalOutputPin(ledPinNumbers[i], "LED " + i, PinState.LOW);
+            ledPins[i].setShutdownOptions(true, PinState.LOW);
+        }
     }
     @Override
     public void onStart() {
@@ -31,6 +46,7 @@ public class ChatServer extends WebSocketServer {
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);;
+        displayIPAddress(wifiIP);
     }
 
     
@@ -155,6 +171,26 @@ public class ChatServer extends WebSocketServer {
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }  
+    }
+
+    private void displayIPAddress(String ipAddress) {
+        // Muestra la dirección IP en la matriz de LEDs
+        // Ajusta este código según la configuración de tu pantalla de LEDs
+
+        // Por ejemplo, asumimos que cada dígito de la dirección IP se muestra en un LED diferente
+        for (int i = 0; i < ipAddress.length(); i++) {
+            char digit = ipAddress.charAt(i);
+            int ledIndex = i; // Ajusta esto según la configuración de tu pantalla de LEDs
+
+            if (digit == '.') {
+                // Puedes ignorar el punto si estás mostrando cada dígito en un LED separado
+                continue;
+            }
+
+            // Enciende o apaga el LED según el valor del dígito
+            boolean isOn = digit != '0'; // Ejemplo: Enciende si el dígito no es '0'
+            ledPins[ledIndex].setState(isOn);
+        }
     }
 
     public void sendList (WebSocket conn) {
