@@ -20,8 +20,7 @@ public class Main {
 
         // Deshabilitar SSLv3 per clients Android
         java.lang.System.setProperty("jdk.tls.client.protocols", "TLSv1,TLSv1.1,TLSv1.2");
-        Pin[] ledPinNumbers={RaspiPin.GPIO_00, RaspiPin.GPIO_01, RaspiPin.GPIO_02, RaspiPin.GPIO_03};
-        ChatServer server = new ChatServer(port,ledPinNumbers);
+        ChatServer server = new ChatServer(port);
         server.runServerBucle();
     }
 
