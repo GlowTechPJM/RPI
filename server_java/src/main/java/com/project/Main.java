@@ -6,29 +6,22 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import java.util.Enumeration;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
-public class Main extends Application {
-    private static final int WEBSOCKET_PORT = 8080;
-    @Override
-    public void start(Stage primaryStage) {
-        ChatServer webSocketServer = new ChatServer(WEBSOCKET_PORT);
-        webSocketServer.start();
+public class Main {
+    public static void main (String[] args) throws InterruptedException, IOException {
 
-        // Crear una etiqueta para mostrar la dirección IP
-        Label ipAddressLabel = new Label("Dirección IP de la WiFi: " + getWiFiIPAddress());
+        int port = 8080; 
+        String wifi = getWiFiIPAddress();
+        System.out.println("Dirección IP WiFi: " + wifi);
 
-        // Crear un VBox y agregar la etiqueta
-        VBox root = new VBox(ipAddressLabel);
+        // Deshabilitar SSLv3 per clients Android
+        java.lang.System.setProperty("jdk.tls.client.protocols", "TLSv1,TLSv1.1,TLSv1.2");
 
-        // Crear una escena y agregarla al escenario
-        Scene scene = new Scene(root, 400, 200);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("Raspberry Pi Display App");
-        primaryStage.show();
-        clearDisplayIPAddress();
-
+        ChatServer server = new ChatServer(port);
+        server.runServerBucle();
     }
 
     private void clearDisplayIPAddress() {
@@ -36,7 +29,7 @@ public class Main extends Application {
     }
 
     // Método para obtener la dirección IP de la WiFi
-    private String getWiFiIPAddress() {
+    private static String getWiFiIPAddress() {
         try {
             Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
             while (networkInterfaces.hasMoreElements()) {
@@ -55,7 +48,5 @@ public class Main extends Application {
         return "No se pudo encontrar la dirección IP WiFi";
     }
 
-    public static void main(String[] args) {
-        launch(args);
-    }
+    
 }

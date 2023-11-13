@@ -14,6 +14,8 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
+import javafx.stage.Stage;
+
 public class ChatServer extends WebSocketServer {
 
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -21,7 +23,6 @@ public class ChatServer extends WebSocketServer {
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
     }
-
     @Override
     public void onStart() {
         // Quan el servidor s'inicia
