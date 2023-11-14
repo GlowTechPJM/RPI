@@ -47,7 +47,6 @@ public class ChatServer extends WebSocketServer {
         String cd="cd";
         String workingdirectory = "~/dev/rpi-rgb-led-matrix";
         String prueba= "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
-        executeCommand(prueba,workingdirectory);
     }
 
     
@@ -248,31 +247,49 @@ private String getWifiIP() {
     }
     return "No se encontró una dirección IP de WiFi.";
 }
-private void executeCommand(String command, String workingDirectory) {
+private void executeCommand() {
+    // Comando para cambiar al directorio deseado
+    String changeDirCommand[] = {"bash", "-c", "cd ~/dev/rpi-rgb-led-matrix"};
+
+    // Comando que se ejecutará después de cambiar el directorio
+    String comandoprint[] = {
+            "examples-api-use/text-example",
+            "-x", "5",
+            "-y", "18",
+            "-f", "~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf",
+            "--led-cols=64",
+            "--led-rows=64",
+            "--led-slowdown-gpio=4",
+            "--led-no-hardware-pulse"
+    };
+
     try {
-        // Reemplazar manualmente la expansión del directorio de inicio (~)
-        if (workingDirectory.startsWith("~" + File.separator)) {
-            workingDirectory = System.getProperty("user.home") + workingDirectory.substring(1);
-        }
+        // Ejecutar el comando para cambiar al directorio
+        Process changeDirProcess = new ProcessBuilder(changeDirCommand).start();
+        changeDirProcess.waitFor();
 
-        // Construir el proceso usando ProcessBuilder
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-        processBuilder.directory(new File(workingDirectory));
-        processBuilder.redirectErrorStream(true);
+        // Imprimir la dirección IP antes de ejecutar el segundo comando
+        String wifiIP = getWifiIP();
+        System.out.println("WiFi IP: " + wifiIP);
 
-        // Iniciar el proceso
-        Process process = processBuilder.start();
+        // Ejecutar el segundo comando en el directorio especificado
+        Process textExampleProcess = new ProcessBuilder(comandoprint)
+                .directory(new File("~/dev/rpi-rgb-led-matrix"))
+                .start();
+        textExampleProcess.waitFor();
 
-        // Esperar a que termine el proceso
-        process.waitFor();
-
-        // Comprobar el resultado de la ejecución
-        System.out.println("Command exit code: " + process.exitValue());
+        // Comprobar el resultado de la ejecución del segundo comando
+        System.out.println("Comanda 2 exit code=" + textExampleProcess.exitValue());
 
     } catch (Exception e) {
         e.printStackTrace();
     }
+
+    // Fin
+    System.out.println("Comandes finalitzades.");
 }
+}
+
 
 
 public void setOnClientConnectedListener(Object object) {
