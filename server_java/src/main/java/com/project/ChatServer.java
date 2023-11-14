@@ -8,6 +8,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -37,6 +38,13 @@ public class ChatServer extends WebSocketServer {
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);;
+        String startupCommand = "cd ~/dev/rpi-rgb-led-matrix";
+        String prueba= "examples-api-use/demo -D0 --led-cols=64 \r\n" + //
+                "--led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse\r\n" + //
+                "";
+        executeCommand(startupCommand);
+        executeCommand(prueba);
+
     }
 
     
@@ -222,6 +230,31 @@ private String getWifiIP() {
         e.printStackTrace();
     }
     return "No se encontró una dirección IP de WiFi.";
+}
+private void executeCommand(String command) {
+    try {
+        // Objecto global Runtime
+        Runtime rt = java.lang.Runtime.getRuntime();
+
+        // Ejecutar comando en subprocess
+        Process p = rt.exec(command);
+
+        // Dar un tiempo de ejecución (ajústalo según tus necesidades)
+        TimeUnit.SECONDS.sleep(5);
+
+        // Matarlo si aún no ha terminado
+        if (p.isAlive()) {
+            p.destroy();
+        }
+
+        p.waitFor();
+
+        // Comprobar el resultado de la ejecución
+        System.out.println("Command exit code: " + p.exitValue());
+
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
 }
 
 public void setOnClientConnectedListener(Object object) {
