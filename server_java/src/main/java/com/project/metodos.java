@@ -41,6 +41,7 @@ public class metodos {
             // el matem si encara no ha acabat
             if( p.isAlive() ) p.destroy();
             p.waitFor();
+            i.waitFor();
             // comprovem el resultat de l'execució
             System.out.println("Comanda 1 exit code="+p.exitValue());
  
