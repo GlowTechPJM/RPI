@@ -43,10 +43,8 @@ public class ChatServer extends WebSocketServer {
         System.out.println("WebSockets server running at: ws://" + wifiIP + ":" + port);
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
-        setConnectionLostTimeout(100);;
-        String cd="cd";
-        String workingdirectory = "~/dev/rpi-rgb-led-matrix";
-        String prueba= "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
+        setConnectionLostTimeout(100);
+        executeCommand();
     }
 
     
