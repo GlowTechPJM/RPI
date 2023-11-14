@@ -35,9 +35,9 @@ public static void ejecutarComandoEnDirectorio(String comando, String directorio
             // Crear un objeto ProcessBuilder
             ProcessBuilder processBuilder = new ProcessBuilder();
 
-            // Configurar el comando a ejecutar
-            processBuilder.command("bash", "-c", comando);
-
+             // Configurar el comando a ejecutar con la ruta completa de bash
+             processBuilder.command(comando.split("\\s+"));
+             
             // Configurar el directorio de trabajo
             processBuilder.directory(new File(directorio));
 
