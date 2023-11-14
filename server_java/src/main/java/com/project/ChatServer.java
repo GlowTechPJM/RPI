@@ -3,11 +3,8 @@ package com.project;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
@@ -32,29 +29,13 @@ public class ChatServer extends WebSocketServer {
     @Override
     public void onStart() {
         // Quan el servidor s'inicia
-        String wifiIP = getWifiIP();
+        String wifiIP = metodos.getWifiIP();
         int port = getAddress().getPort();
         System.out.println("WebSockets server running at: ws://" + wifiIP + ":" + port);
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
-        System.out.println("Iniciant comanda...");
-
-        // Directorio de trabajo
-        String workingDirectory = "~/dev/rpi-rgb-led-matrix";
-
-        // Comando para cambiar al directorio deseado
-        String cdCommand = "cd " + workingDirectory;
-
-        // Comando para mostrar el texto en la pantalla LED
-        String textCommand = "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
-
-        // Ejecutar el comando cd para cambiar al directorio
-        ejecutarComanda(cdCommand);
-
-        // Ejecutar el comando para mostrar el texto en la pantalla LED
-        ejecutarComanda(textCommand);
-        ejecutarComanda(wifiIP);
+       metodos.ejecutarComanda();
     }
         
     
@@ -239,55 +220,9 @@ public class ChatServer extends WebSocketServer {
         return null;
     }
 
-private String getWifiIP() {
-    try {
-        Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
-        while (networkInterfaces.hasMoreElements()) {
-            NetworkInterface networkInterface = networkInterfaces.nextElement();
-            Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-            while (inetAddresses.hasMoreElements()) {
-                InetAddress inetAddress = inetAddresses.nextElement();
-                if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress()) {
-                    return inetAddress.getHostAddress();
-                }
-            }
-        }
-    } catch (SocketException e) {
-        e.printStackTrace();
-    }
-    return "No se encontró una dirección IP de WiFi.";
-}
 
-    private static void ejecutarComanda(String command) {
-        
-            try {
-                // Construir el proceso usando ProcessBuilder
-                ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-    
-                // Iniciar el proceso
-                Process process = processBuilder.start();
-    
-                // Esperar a que termine el proceso
-                process.waitFor();
-    
-                // Comprobar el resultado de la ejecución
-                System.out.println("Comanda exit code: " + process.exitValue());
-    
-                // Leer y enviar la salida del comando al cliente (opcional)
-                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-                StringBuilder output = new StringBuilder();
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    output.append(line).append("\n");
-                }
-    
-                // Enviar la salida del comando al cliente (opcional)
-                System.out.println("Salida del comando: " + output.toString());
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+    
 
 
 public void setOnClientConnectedListener(Object object) {
