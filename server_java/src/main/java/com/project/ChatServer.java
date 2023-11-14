@@ -235,7 +235,7 @@ private String getWifiIP() {
 private void executeCommand(String command, String workingDirectory) {
     try {
         // Construir el proceso usando ProcessBuilder
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+        ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.directory(new File(workingDirectory));
         processBuilder.redirectErrorStream(true);
 
