@@ -27,7 +27,7 @@ public class metodos {
     return "No se encontró una dirección IP de WiFi.";
 }
     public static void ejecutarComanda() {
-        String cmd[] = {"cd","~/dev/rpi-rgb-led-matrix"};
+        String cmd[] = {"cd ","~/dev/rpi-rgb-led-matrix"};
         String ls[] ={"ls"};
         try {
             // objecte global Runtime
