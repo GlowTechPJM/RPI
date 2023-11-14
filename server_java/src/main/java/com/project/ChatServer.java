@@ -6,13 +6,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
+import java.io.OutputStream;  // Make sure this import is correct
+
 
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
-import org.java_websocket.util.Base64.OutputStream;
 import org.json.JSONObject;
 
 
@@ -232,12 +233,14 @@ public class ChatServer extends WebSocketServer {
             Process proceso = processBuilder.start();
 
             InputStream inputStream = proceso.getInputStream();
+            OutputStream outputStream = proceso.getOutputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            PrintWriter writer = new PrintWriter(outputStream, true);
+            writer.println(text);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
 
     
