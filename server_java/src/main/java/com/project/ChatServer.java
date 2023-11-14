@@ -1,7 +1,6 @@
 package com.project;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -9,7 +8,6 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
@@ -17,11 +15,7 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
-import com.pi4j.io.gpio.GpioController;
-import com.pi4j.io.gpio.GpioFactory;
-import com.pi4j.io.gpio.GpioPinDigitalOutput;
-import com.pi4j.io.gpio.Pin;
-import com.pi4j.io.gpio.PinState;
+
 
 
 
@@ -44,7 +38,28 @@ public class ChatServer extends WebSocketServer {
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
-        executeCommand();
+        System.out.println("Iniciant comanda...");
+
+        // Carpeta deseada
+        String directorio = "~/dev/rpi-rgb-led-matrix";
+        
+        // Comanda para cambiar al directorio
+        String cambioDirectorio[] = {"bash", "-c", "cd " + directorio};
+
+        // Comanda principal
+        String cmd[] = {"bash", "-c", "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"};
+
+        try {
+            // Ejecutar el cambio de directorio
+            ejecutarComanda(cambioDirectorio);
+
+            // Ejecutar la comanda principal
+            ejecutarComanda(cmd);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
     }
 
     
@@ -245,48 +260,28 @@ private String getWifiIP() {
     }
     return "No se encontró una dirección IP de WiFi.";
 }
-private void executeCommand() {
-    // Comando para cambiar al directorio deseado
-    String changeDirCommand[] = {"bash", "-c", "cd ~/dev/rpi-rgb-led-matrix"};
 
-    // Comando que se ejecutará después de cambiar el directorio
-    String comandoprint[] = {
-            "examples-api-use/text-example",
-            "-x", "5",
-            "-y", "18",
-            "-f", "~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf",
-            "--led-cols=64",
-            "--led-rows=64",
-            "--led-slowdown-gpio=4",
-            "--led-no-hardware-pulse"
-    };
+    private static void ejecutarComanda(String[] cmd) {
+        try {
+            // Construir el proceso usando ProcessBuilder
+            ProcessBuilder processBuilder = new ProcessBuilder(cmd);
+            
+            // Redirigir la salida estándar y el error estándar al mismo stream
+            processBuilder.redirectErrorStream(true);
 
-    try {
-        // Ejecutar el comando para cambiar al directorio
-        Process changeDirProcess = new ProcessBuilder(changeDirCommand).start();
-        changeDirProcess.waitFor();
+            // Iniciar el proceso
+            Process process = processBuilder.start();
 
-        // Imprimir la dirección IP antes de ejecutar el segundo comando
-        String wifiIP = getWifiIP();
-        System.out.println("WiFi IP: " + wifiIP);
+            // Esperar a que termine el proceso
+            process.waitFor();
 
-        // Ejecutar el segundo comando en el directorio especificado
-        Process textExampleProcess = new ProcessBuilder(comandoprint)
-                .directory(new File("~/dev/rpi-rgb-led-matrix"))
-                .start();
-        textExampleProcess.waitFor();
+            // Comprobar el resultado de la ejecución
+            System.out.println("Comanda exit code: " + process.exitValue());
 
-        // Comprobar el resultado de la ejecución del segundo comando
-        System.out.println("Comanda 2 exit code=" + textExampleProcess.exitValue());
-
-    } catch (Exception e) {
-        e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
-
-    // Fin
-    System.out.println("Comandes finalitzades.");
-}
-
 
 
 public void setOnClientConnectedListener(Object object) {
