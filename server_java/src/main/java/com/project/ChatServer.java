@@ -41,9 +41,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(100);;
         String cd="cd";
         String workingdirectory = "~/dev/rpi-rgb-led-matrix";
-        String prueba= "examples-api-use/demo -D0 --led-cols=64 \r\n" + //
-                "--led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse\r\n" + //
-                "";
+        String prueba= "examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
         executeCommand(prueba,workingdirectory);
 
     }
