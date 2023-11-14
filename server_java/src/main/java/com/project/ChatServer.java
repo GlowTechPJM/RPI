@@ -23,9 +23,13 @@ import com.pi4j.io.gpio.Pin;
 import com.pi4j.io.gpio.PinState;
 
 
+
+
 public class ChatServer extends WebSocketServer {
 
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+    private volatile boolean running = true;
+
 
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
@@ -43,7 +47,8 @@ public class ChatServer extends WebSocketServer {
         String workingdirectory = "~/dev/rpi-rgb-led-matrix";
         String prueba= "examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
         executeCommand(prueba,workingdirectory);
-
+        Thread userInputThread = new Thread(this::handleUserInput);
+        userInputThread.start();
     }
 
     
@@ -278,6 +283,19 @@ private void executeCommand(String command, String workingDirectory) {
         broadcast(objResponse.toString());
 
     } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+private void handleUserInput() {
+    try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
+        while (running) {
+            String line = reader.readLine();
+            if ("exit".equalsIgnoreCase(line)) {
+                running = false;
+                break;
+            }
+        }
+    } catch (IOException e) {
         e.printStackTrace();
     }
 }
