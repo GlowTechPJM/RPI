@@ -48,8 +48,6 @@ public class ChatServer extends WebSocketServer {
         String workingdirectory = "~/dev/rpi-rgb-led-matrix";
         String prueba= "examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
         executeCommand(prueba,workingdirectory);
-        Thread userInputThread = new Thread(this::handleUserInput);
-        userInputThread.start();
     }
 
     
@@ -163,27 +161,30 @@ public class ChatServer extends WebSocketServer {
     }
 
     public void runServerBucle() {
-        boolean running = true;
-    
-        // Usar BufferedReader para leer la entrada del usuario
         BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
-    
+
         try {
             System.out.println("Starting server");
             start();
-    
+
             while (running) {
                 // Leer la línea de la entrada del usuario
                 String line = reader.readLine();
-    
+
                 if (line.equalsIgnoreCase("exit")) {
                     running = false;
                 }
             }
-    
+
+            // Esperar a que todas las conexiones se cierren antes de detener el servidor
+            System.out.println("Waiting for connections to close...");
+            while (getConnections().size() > 0) {
+                TimeUnit.MILLISECONDS.sleep(100);
+            }
+
             System.out.println("Stopping server");
             stop(1000);
-    
+
             // Cerrar el BufferedReader
             reader.close();
         } catch (IOException | InterruptedException e) {
@@ -268,42 +269,11 @@ private void executeCommand(String command, String workingDirectory) {
         // Comprobar el resultado de la ejecución
         System.out.println("Command exit code: " + process.exitValue());
 
-        // Leer y enviar la salida del comando al cliente (opcional)
-        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-        StringBuilder output = new StringBuilder();
-        String line;
-        while ((line = reader.readLine()) != null) {
-            output.append(line).append("\n");
-        }
-
-        // Enviar la salida del comando al cliente
-        JSONObject objResponse = new JSONObject("{}");
-        objResponse.put("type", "command_output");
-        objResponse.put("from", "server");
-        objResponse.put("value", output.toString());
-        broadcast(objResponse.toString());
-
     } catch (Exception e) {
         e.printStackTrace();
     }
 }
-private void handleUserInput() {
-    Scanner scanner = new Scanner(System.in);
 
-    while (running) {
-        try {
-            String line = scanner.nextLine();
-            if ("exit".equalsIgnoreCase(line)) {
-                running = false;
-                break;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    scanner.close();
-}
 
 public void setOnClientConnectedListener(Object object) {
 }
