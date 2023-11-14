@@ -27,7 +27,6 @@ public class ChatServer extends WebSocketServer {
 
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
-        // Inicializa los pines GPIO para los LEDs
     }
     @Override
     public void onStart() {
@@ -100,14 +99,19 @@ public class ChatServer extends WebSocketServer {
         String clientId = getConnectionId(conn);
         try {
             JSONObject objRequest = new JSONObject(message);
-            String type = objRequest.getString("type");
-
-            if (type.equalsIgnoreCase("list")) {
+            String platform = objRequest.getString("platform");
+            if (platform.equalsIgnoreCase("android")){
+                String mensaje = objRequest.getString("message");
+                System.out.println(mensaje+", Mensage enviado desde Android");
+            }else if(platform.equalsIgnoreCase("flutter")){
+                String mensaje = objRequest.getString("message");
+                System.out.println(mensaje+", Mensage enviado desde Flutter");
+            } else if (platform.equalsIgnoreCase("list")) {
                 // El client demana la llista de tots els clients
                 System.out.println("Client '" + clientId + "'' requests list of clients");
                 sendList(conn);
 
-            } else if (type.equalsIgnoreCase("private")) {
+            } else if (platform.equalsIgnoreCase("private")) {
                 // El client envia un missatge privat a un altre client
                 System.out.println("Client '" + clientId + "'' sends a private message");
 
@@ -123,7 +127,7 @@ public class ChatServer extends WebSocketServer {
                     desti.send(objResponse.toString()); 
                 }
                 
-            } else if (type.equalsIgnoreCase("broadcast")) {
+            } else if (platform.equalsIgnoreCase("broadcast")) {
                 // El client envia un missatge a tots els clients
                 System.out.println("Client '" + clientId + "'' sends a broadcast message to everyone");
 
