@@ -30,7 +30,7 @@ public class metodos {
 public static void ejecutarComandoEnDirectorio(String directorio, String comando) {
     try {
         // Crear el proceso builder con el comando y el directorio de trabajo
-        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", comando);
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", comando);
         processBuilder.directory(new java.io.File(directorio));
 
         // Iniciar el proceso
