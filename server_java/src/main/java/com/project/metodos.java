@@ -33,20 +33,6 @@ public class metodos {
     }
     return "No se encontró una dirección IP de WiFi.";
 }
-
-public static void executeDisplayCommand(String text) {
-        try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-            Process proceso = processBuilder.start();
-
-            InputStream inputStream = proceso.getInputStream();
-            OutputStream outputStream = (OutputStream) proceso.getOutputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            PrintWriter writer = new PrintWriter(outputStream, true);
-            writer.println(text);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }
+
+

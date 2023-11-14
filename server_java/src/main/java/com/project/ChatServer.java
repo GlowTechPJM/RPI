@@ -2,7 +2,9 @@ package com.project;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 
 import java.util.concurrent.TimeUnit;
@@ -10,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
+import org.java_websocket.util.Base64.OutputStream;
 import org.json.JSONObject;
 
 
@@ -37,7 +40,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(100);
         String comando = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"; // Cambia esto al comando que quieras ejecutar
 
-        metodos.executeDisplayCommand(comando);;
+        executeDisplayCommand(comando);;
     }
         
     
@@ -222,6 +225,19 @@ public class ChatServer extends WebSocketServer {
         return null;
     }
 
+    public static void executeDisplayCommand(String text) {
+        try {
+            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+            Process proceso = processBuilder.start();
+
+            InputStream inputStream = proceso.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     
@@ -230,4 +246,5 @@ public class ChatServer extends WebSocketServer {
 public void setOnClientConnectedListener(Object object) {
 }
 }
+
 
