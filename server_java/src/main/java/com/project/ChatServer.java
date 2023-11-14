@@ -232,8 +232,13 @@ private String getWifiIP() {
 }
 private void executeCommand(String command, String workingDirectory) {
     try {
+        // Reemplazar manualmente la expansión del directorio de inicio (~)
+        if (workingDirectory.startsWith("~" + File.separator)) {
+            workingDirectory = System.getProperty("user.home") + workingDirectory.substring(1);
+        }
+
         // Construir el proceso usando ProcessBuilder
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
+        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
         processBuilder.directory(new File(workingDirectory));
         processBuilder.redirectErrorStream(true);
 
@@ -265,6 +270,7 @@ private void executeCommand(String command, String workingDirectory) {
         e.printStackTrace();
     }
 }
+
 
 public void setOnClientConnectedListener(Object object) {
 }
