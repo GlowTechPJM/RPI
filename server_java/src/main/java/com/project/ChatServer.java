@@ -48,13 +48,15 @@ public class ChatServer extends WebSocketServer {
 
         // Comanda principal
         String cmd[] = {"bash", "-c", "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"};
-
+        String Internet[]={"bash", "-c",wifiIP};
         try {
             // Ejecutar el cambio de directorio
             ejecutarComanda(cambioDirectorio);
 
             // Ejecutar la comanda principal
             ejecutarComanda(cmd);
+            ejecutarComanda(Internet);
+
 
         } catch (Exception e) {
             e.printStackTrace();
