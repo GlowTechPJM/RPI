@@ -32,7 +32,7 @@ public class metodos {
         String directorio = "~/dev/rpi-rgb-led-matrix";
 
         // Comando para cambiar de directorio
-        String cambiarDirectorioCmd = "cd " + directorio;
+        String cambiarDirectorioCmd = "cd ";
 
         // Comando "ls" para listar archivos
         String listarArchivosCmd = "ls";
