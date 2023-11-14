@@ -28,7 +28,7 @@ public class metodos {
 }
     public static void ejecutarComanda() {
         String cmd[] = {"bash", "-c","cd","~/dev/rpi-rgb-led-matrix"};
-        String ls[] ={"ls"};
+        String ls[] ={"bash", "-c","ls"};
         try {
             // objecte global Runtime
             Runtime rt = java.lang.Runtime.getRuntime();
