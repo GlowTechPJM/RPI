@@ -286,10 +286,10 @@ private void executeCommand() {
     // Fin
     System.out.println("Comandes finalitzades.");
 }
-}
 
 
 
 public void setOnClientConnectedListener(Object object) {
 }
 }
+
