@@ -36,7 +36,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-       metodos.ejecutarComandoEnDirectorio("~/dev/rpi-rgb-led-matrix","examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse");
+       metodos.ejecutarComandoEnDirectorio("examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse","~/dev/rpi-rgb-led-matrix");
     }
         
     

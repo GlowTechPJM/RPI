@@ -1,6 +1,9 @@
 package com.project;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
@@ -27,29 +30,34 @@ public class metodos {
     return "No se encontró una dirección IP de WiFi.";
 }
 
-public static void ejecutarComandoEnDirectorio(String directorio, String comando) {
-    try {
-        // Crear el proceso builder con el comando y el directorio de trabajo
-        ProcessBuilder processBuilder = new ProcessBuilder("/bin/bash", "-c", comando);
-        processBuilder.directory(new java.io.File(directorio));
+public static void ejecutarComandoEnDirectorio(String comando, String directorio) {
+        try {
+            // Crear un objeto ProcessBuilder
+            ProcessBuilder processBuilder = new ProcessBuilder();
 
-        // Iniciar el proceso
-        Process proceso = processBuilder.start();
+            // Configurar el comando a ejecutar
+            processBuilder.command("bash", "-c", comando);
 
-        // Esperar a que el proceso termine
-        int codigoSalida = proceso.waitFor();
+            // Configurar el directorio de trabajo
+            processBuilder.directory(new File(directorio));
 
-        // Imprimir la salida del proceso
-        java.util.Scanner s = new java.util.Scanner(proceso.getInputStream()).useDelimiter("\\A");
-        String salida = s.hasNext() ? s.next() : "";
+            // Iniciar el proceso
+            Process proceso = processBuilder.start();
 
-        // Imprimir el resultado
-        System.out.println("Resultado del comando '" + comando + "':\n" + salida);
-        System.out.println("Código de salida: " + codigoSalida);
+            // Capturar la salida del proceso
+            BufferedReader reader = new BufferedReader(new InputStreamReader(proceso.getInputStream()));
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                System.out.println(linea);
+            }
 
-    } catch (IOException | InterruptedException e) {
-        e.printStackTrace();
+            // Esperar a que el proceso termine
+            int exitCode = proceso.waitFor();
+            System.out.println("Código de salida: " + exitCode);
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
-}
     
 }
