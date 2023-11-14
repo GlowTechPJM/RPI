@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.concurrent.TimeUnit;
 
 public class metodos {
     public static String getWifiIP() {
@@ -26,36 +27,26 @@ public class metodos {
     return "No se encontró una dirección IP de WiFi.";
 }
     public static void ejecutarComanda() {
-        System.out.println("Iniciando comandos...");
-
-        // Directorio deseado
-        String directorio = "~/dev/rpi-rgb-led-matrix";
-
-        // Comando para cambiar de directorio
-        String cambiarDirectorioCmd = "cd ";
-
-        // Comando "ls" para listar archivos
-        String listarArchivosCmd = "ls";
-
+        String cmd[] = {"cd","~/dev/rpi-rgb-led-matrix"};
+        String ls[] ={"ls"};
         try {
-            // Ejecutar el comando para cambiar de directorio
-            Process cambiarDirProcess = Runtime.getRuntime().exec(new String[] {"bash", "-c", cambiarDirectorioCmd});
-            cambiarDirProcess.waitFor();
-
-            // Ejecutar el comando "ls" en el nuevo directorio
-            Process lsProcess = Runtime.getRuntime().exec(new String[] {"bash", "-c", listarArchivosCmd});
-            lsProcess.waitFor();
-
-            // Imprimir la salida del comando "ls"
-            java.util.Scanner s = new java.util.Scanner(lsProcess.getInputStream()).useDelimiter("\\A");
-            String output = s.hasNext() ? s.next() : "";
-            System.out.println("Resultado de 'ls':\n" + output);
-
-        } catch (IOException | InterruptedException e) {
+            // objecte global Runtime
+            Runtime rt = java.lang.Runtime.getRuntime();
+ 
+            // executar comanda en subprocess
+            Process p = rt.exec(cmd);
+            // donem un temps d'execució
+            Process i = rt.exec(ls);
+            TimeUnit.SECONDS.sleep(5);
+            // el matem si encara no ha acabat
+            if( p.isAlive() ) p.destroy();
+            p.waitFor();
+            // comprovem el resultat de l'execució
+            System.out.println("Comanda 1 exit code="+p.exitValue());
+ 
+        } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("Comandos finalizados.");
     }
     
 }
