@@ -156,24 +156,35 @@ public class ChatServer extends WebSocketServer {
         ex.printStackTrace();
     }
 
-    public void runServerBucle () {
+    public void runServerBucle() {
         boolean running = true;
+    
+        // Usar BufferedReader para leer la entrada del usuario
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    
         try {
             System.out.println("Starting server");
             start();
+    
             while (running) {
-                String line;
-                line = in.readLine();
-                if (line.equals("exit")) {
+                // Leer la línea de la entrada del usuario
+                String line = reader.readLine();
+    
+                if (line.equalsIgnoreCase("exit")) {
                     running = false;
                 }
-            } 
+            }
+    
             System.out.println("Stopping server");
             stop(1000);
+    
+            // Cerrar el BufferedReader
+            reader.close();
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
-        }  
+        }
     }
+    
 
 
     public void sendList (WebSocket conn) {
