@@ -9,6 +9,7 @@ import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
@@ -287,19 +288,22 @@ private void executeCommand(String command, String workingDirectory) {
     }
 }
 private void handleUserInput() {
-    try (BufferedReader reader = new BufferedReader(new InputStreamReader(System.in))) {
-        while (running) {
-            String line = reader.readLine();
+    Scanner scanner = new Scanner(System.in);
+
+    while (running) {
+        try {
+            String line = scanner.nextLine();
             if ("exit".equalsIgnoreCase(line)) {
                 running = false;
                 break;
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
     }
-}
 
+    scanner.close();
+}
 
 public void setOnClientConnectedListener(Object object) {
 }
