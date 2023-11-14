@@ -40,29 +40,24 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(100);
         System.out.println("Iniciant comanda...");
 
-        // Carpeta deseada
-        String directorio = "~/dev/rpi-rgb-led-matrix";
-        
-        // Comanda para cambiar al directorio
-        String cambioDirectorio[] = {"bash", "-c", "cd " + directorio};
+        // Directorio de trabajo
+        String workingDirectory = "~/dev/rpi-rgb-led-matrix";
 
-        // Comanda principal
-        String cmd[] = {"bash", "-c", "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"};
-        String Internet[]={"bash", "-c",wifiIP};
-        try {
-            // Ejecutar el cambio de directorio
-            ejecutarComanda(cambioDirectorio);
+        // Comando para cambiar al directorio deseado
+        String cdCommand = "cd " + workingDirectory;
 
-            // Ejecutar la comanda principal
-            ejecutarComanda(cmd);
-            ejecutarComanda(Internet);
+        // Comando para mostrar el texto en la pantalla LED
+        String textCommand = "examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
 
+        // Ejecutar el comando cd para cambiar al directorio
+        ejecutarComanda(cdCommand);
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        
+        // Ejecutar el comando para mostrar el texto en la pantalla LED
+        ejecutarComanda(textCommand);
+        ejecutarComanda(wifiIP);
     }
+        
+    
 
     
 
@@ -263,22 +258,31 @@ private String getWifiIP() {
     return "No se encontró una dirección IP de WiFi.";
 }
 
-    private static void ejecutarComanda(String[] cmd) {
-        try {
-            // Construir el proceso usando ProcessBuilder
-            ProcessBuilder processBuilder = new ProcessBuilder(cmd);
-            
-            // Redirigir la salida estándar y el error estándar al mismo stream
-            processBuilder.redirectErrorStream(true);
-
-            // Iniciar el proceso
-            Process process = processBuilder.start();
-
-            // Esperar a que termine el proceso
-            process.waitFor();
-
-            // Comprobar el resultado de la ejecución
-            System.out.println("Comanda exit code: " + process.exitValue());
+    private static void ejecutarComanda(String command) {
+        
+            try {
+                // Construir el proceso usando ProcessBuilder
+                ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+    
+                // Iniciar el proceso
+                Process process = processBuilder.start();
+    
+                // Esperar a que termine el proceso
+                process.waitFor();
+    
+                // Comprobar el resultado de la ejecución
+                System.out.println("Comanda exit code: " + process.exitValue());
+    
+                // Leer y enviar la salida del comando al cliente (opcional)
+                BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+                StringBuilder output = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    output.append(line).append("\n");
+                }
+    
+                // Enviar la salida del comando al cliente (opcional)
+                System.out.println("Salida del comando: " + output.toString());
 
         } catch (Exception e) {
             e.printStackTrace();
