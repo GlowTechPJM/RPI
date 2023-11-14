@@ -35,7 +35,8 @@ public class ChatServer extends WebSocketServer {
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
-       metodos.ejecutarComanda();
+
+       metodos.ejecutarComandoEnDirectorio("~/dev/rpi-rgb-led-matrix","examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse");
     }
         
     

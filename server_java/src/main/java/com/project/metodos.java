@@ -26,28 +26,30 @@ public class metodos {
     }
     return "No se encontró una dirección IP de WiFi.";
 }
-    public static void ejecutarComanda() {
-        String cmd[] = {"bash", "-c","cd","~/dev/rpi-rgb-led-matrix && examples-api-use/demo -D0 --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"};
-        String ls[] ={"bash", "-c","ls"};
-        try {
-            // objecte global Runtime
-            Runtime rt = java.lang.Runtime.getRuntime();
- 
-            // executar comanda en subprocess
-            Process p = rt.exec(cmd);
-            // donem un temps d'execució
-            Process i = rt.exec(ls);
-            TimeUnit.SECONDS.sleep(5);
-            // el matem si encara no ha acabat
-            if( p.isAlive() ) p.destroy();
-            p.waitFor();
-            i.waitFor();
-            // comprovem el resultat de l'execució
-            System.out.println("Comanda 1 exit code="+p.exitValue());
- 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+
+public static void ejecutarComandoEnDirectorio(String directorio, String comando) {
+    try {
+        // Crear el proceso builder con el comando y el directorio de trabajo
+        ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", comando);
+        processBuilder.directory(new java.io.File(directorio));
+
+        // Iniciar el proceso
+        Process proceso = processBuilder.start();
+
+        // Esperar a que el proceso termine
+        int codigoSalida = proceso.waitFor();
+
+        // Imprimir la salida del proceso
+        java.util.Scanner s = new java.util.Scanner(proceso.getInputStream()).useDelimiter("\\A");
+        String salida = s.hasNext() ? s.next() : "";
+
+        // Imprimir el resultado
+        System.out.println("Resultado del comando '" + comando + "':\n" + salida);
+        System.out.println("Código de salida: " + codigoSalida);
+
+    } catch (IOException | InterruptedException e) {
+        e.printStackTrace();
     }
+}
     
 }
