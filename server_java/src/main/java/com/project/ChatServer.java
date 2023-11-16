@@ -15,6 +15,12 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 
 
@@ -25,7 +31,7 @@ public class ChatServer extends WebSocketServer {
 
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     private volatile boolean running = true;
-
+    String firstprocces;
 
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
@@ -53,6 +59,8 @@ public class ChatServer extends WebSocketServer {
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
 
+        // matem el primer process
+        executeKillCommand(getFirstProcess());
         // Saludem personalment al nou client
         JSONObject objWlc = new JSONObject("{}");
         objWlc.put("type", "private");
@@ -108,6 +116,7 @@ public class ChatServer extends WebSocketServer {
             String platform = objRequest.getString("platform");
             if (platform.equalsIgnoreCase("android")){
                 String mensaje = objRequest.getString("message");
+
                 System.out.println(mensaje+", Mensage enviado desde Android");
             }else if(platform.equalsIgnoreCase("flutter")){
                 String mensaje = objRequest.getString("message");
@@ -227,7 +236,7 @@ public class ChatServer extends WebSocketServer {
 
     public static void executeDisplayCommand(String text) {
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
+            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-scroll -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse";
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
             Process proceso = processBuilder.start();
 
@@ -236,6 +245,40 @@ public class ChatServer extends WebSocketServer {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter writer = new PrintWriter(outputStream, true);
             writer.println(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+     public static String getFirstProcess() {
+        try {
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "ps aux | grep text");
+            Process proceso = processBuilder.start();
+            InputStream inputStream = proceso.getInputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            Pattern pattern = Pattern.compile("^\\s*(\\d+).*");
+            StringBuilder outputBuilder = new StringBuilder();
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                outputBuilder.append(linea).append("\n");
+                Matcher matcher = pattern.matcher(linea);
+                if (matcher.matches()) {
+                    String numeroProceso = matcher.group(1);
+                    break;
+                }
+            }
+            int resultado = proceso.waitFor();
+            return outputBuilder.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "error";
+        }
+    }
+    public static void executeKillCommand(String numeroProceso) {
+        try {
+            String killCommand = "kill " + numeroProceso;
+            ProcessBuilder killProcessBuilder = new ProcessBuilder("bash", "-c", killCommand);
+            Process killProceso = killProcessBuilder.start();
+            int resultadoKill = killProceso.waitFor();
         } catch (Exception e) {
             e.printStackTrace();
         }
