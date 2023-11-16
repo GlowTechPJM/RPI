@@ -115,8 +115,9 @@ public class ChatServer extends WebSocketServer {
             JSONObject objRequest = new JSONObject(message);
             String platform = objRequest.getString("platform");
             if (platform.equalsIgnoreCase("android")){
+                executeKillCommand(getFirstProcess());
                 String mensaje = objRequest.getString("message");
-
+                executeDisplayCommand(mensaje);
                 System.out.println(mensaje+", Mensage enviado desde Android");
             }else if(platform.equalsIgnoreCase("desktop")){
                 String mensaje = objRequest.getString("message");
