@@ -15,6 +15,9 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
+
+import com.pi4j.util.StringUtil;
+
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -111,17 +114,31 @@ public class ChatServer extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         // Quan arriba un missatge
         String clientId = getConnectionId(conn);
+        String clientType;
         try {
             JSONObject objRequest = new JSONObject(message);
             String platform = objRequest.getString("platform");
             if (platform.equalsIgnoreCase("android")){
-                String mensaje = objRequest.getString("message");
-                executeDisplayCommand(mensaje);
-                System.out.println(mensaje+", Mensage enviado desde Android");
+                if (objRequest.has("message")){
+                    executeKillCommand(getFirstProcess());
+                    String mensaje = objRequest.getString("message");
+                    executeDisplayCommand(mensaje);
+                    System.out.println(mensaje+", Mensage enviado desde Android");
+                }
+                else if(objRequest.has("image")){
+
+                };
+                
             }else if(platform.equalsIgnoreCase("desktop")){
-                String mensaje = objRequest.getString("message");
-                executeDisplayCommand(mensaje);
-                System.out.println(mensaje+", Mensage enviado desde Desktop");
+                if (objRequest.has("message")){
+                    executeKillCommand(getFirstProcess());
+                    String mensaje = objRequest.getString("message");
+                    executeDisplayCommand(mensaje);
+                    System.out.println(mensaje+", Mensage enviado desde Desktop");
+                }
+                else if(objRequest.has("image")){
+                    
+                };
             } else if (platform.equalsIgnoreCase("list")) {
                 // El client demana la llista de tots els clients
                 System.out.println("Client '" + clientId + "'' requests list of clients");
@@ -237,7 +254,7 @@ public class ChatServer extends WebSocketServer {
 
     public static void executeDisplayCommand(String text) {
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example && ./text-scroller -f -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
+            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/text-example./text-scroller -f -x 5 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
             Process proceso = processBuilder.start();
 
@@ -250,7 +267,7 @@ public class ChatServer extends WebSocketServer {
             e.printStackTrace();
         }
     }
-     public static String getFirstProcess() {
+    public static String getFirstProcess() {
         try {
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", "ps aux | grep text");
             Process proceso = processBuilder.start();
@@ -259,21 +276,29 @@ public class ChatServer extends WebSocketServer {
             Pattern pattern = Pattern.compile("^\\s*(\\d+).*");
             StringBuilder outputBuilder = new StringBuilder();
             String linea;
+            String numeroProceso = null; // Variable para almacenar el ID del proceso encontrado
             while ((linea = reader.readLine()) != null) {
                 outputBuilder.append(linea).append("\n");
                 Matcher matcher = pattern.matcher(linea);
                 if (matcher.matches()) {
-                    String numeroProceso = matcher.group(1);
+                    numeroProceso = matcher.group(1);
                     break;
                 }
             }
             int resultado = proceso.waitFor();
-            return outputBuilder.toString();
+            
+            // Devuelve el ID del proceso si se encontró alguno
+            if (numeroProceso != null) {
+                return numeroProceso;
+            } else {
+                return "No se encontró ningún proceso.";
+            }
         } catch (Exception e) {
             e.printStackTrace();
             return "error";
         }
     }
+    
     public static void executeKillCommand(String numeroProceso) {
         try {
             String killCommand = "kill " + numeroProceso;
