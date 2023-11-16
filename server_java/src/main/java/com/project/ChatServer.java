@@ -35,6 +35,8 @@ public class ChatServer extends WebSocketServer {
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
     private volatile boolean running = true;
     String firstprocces;
+    int app = 0;
+    int desktop = 0;
 
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
@@ -61,11 +63,9 @@ public class ChatServer extends WebSocketServer {
         
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
-        int app = 0;
-        int desktop = 0;
+        
         // eliminamos la primera comanda
         executeKillCommand(getFirstProcess());
-        executeDisplayCommand("conexion app: "+app+"\nconexion desktop: "+desktop);
         // Saludem personalment al nou client
         JSONObject objWlc = new JSONObject("{}");
         objWlc.put("type", "private");
@@ -121,6 +121,9 @@ public class ChatServer extends WebSocketServer {
             JSONObject objRequest = new JSONObject(message);
             String platform = objRequest.getString("platform");
             if (platform.equalsIgnoreCase("android")){
+                app = app +1;
+                executeDisplayCommand("conexion app: "+app+" conexion desktop: "+desktop);
+
                 if (objRequest.has("message")){
                     executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
@@ -132,6 +135,8 @@ public class ChatServer extends WebSocketServer {
                 };
                 
             }else if(platform.equalsIgnoreCase("desktop")){
+                desktop += 1;
+                executeDisplayCommand("conexion app: "+app+" conexion desktop: "+desktop);
                 if (objRequest.has("message")){
                     executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
