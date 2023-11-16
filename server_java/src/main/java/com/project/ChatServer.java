@@ -276,23 +276,16 @@ public class ChatServer extends WebSocketServer {
             Pattern pattern = Pattern.compile("^\\s*(\\d+).*");
             StringBuilder outputBuilder = new StringBuilder();
             String linea;
-            String numeroProceso = null; // Variable para almacenar el ID del proceso encontrado
             while ((linea = reader.readLine()) != null) {
                 outputBuilder.append(linea).append("\n");
                 Matcher matcher = pattern.matcher(linea);
                 if (matcher.matches()) {
-                    numeroProceso = matcher.group(1);
+                    String numeroProceso = matcher.group(1);
                     break;
                 }
             }
             int resultado = proceso.waitFor();
-            
-            // Devuelve el ID del proceso si se encontró alguno
-            if (numeroProceso != null) {
-                return numeroProceso;
-            } else {
-                return "No se encontró ningún proceso.";
-            }
+            return outputBuilder.toString();
         } catch (Exception e) {
             e.printStackTrace();
             return "error";
