@@ -254,7 +254,7 @@ public class ChatServer extends WebSocketServer {
 
     public static void executeDisplayCommand(String text) {
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 15 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
+            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 40 -y 18 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
             Process proceso = processBuilder.start();
 
