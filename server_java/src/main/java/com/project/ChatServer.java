@@ -117,7 +117,7 @@ public class ChatServer extends WebSocketServer {
                 String mensaje = objRequest.getString("message");
 
                 System.out.println(mensaje+", Mensage enviado desde Android");
-            }else if(platform.equalsIgnoreCase("flutter")){
+            }else if(platform.equalsIgnoreCase("desktop")){
                 String mensaje = objRequest.getString("message");
                 System.out.println(mensaje+", Mensage enviado desde Flutter");
             } else if (platform.equalsIgnoreCase("list")) {
