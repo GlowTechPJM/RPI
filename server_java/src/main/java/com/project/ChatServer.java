@@ -51,7 +51,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-        executeDisplayCommand(wifiIP);;
+        executeDisplayCommandPantalla(wifiIP);
     }
         
     
@@ -60,12 +60,26 @@ public class ChatServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        
+        // eliminamos la primera comanda
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
-        
-        // eliminamos la primera comanda
-        executeKillCommand(getFirstProcess());
+        String clientPlatform = handshake.getFieldValue("platform"); // Obtiene el valor del campo "platform" del handshake
+
+        if (clientPlatform != null) {
+            // Realiza acciones basadas en la plataforma del cliente
+            if (clientPlatform.equalsIgnoreCase("android")) {
+                // Cliente conectado desde una aplicación Android
+                app = app +1;
+                executeKillCommand(getFirstProcess());
+                executeDisplayCommandPantalla("conexion app: "+app+" conexion desktop: "+desktop);
+            } else if (clientPlatform.equalsIgnoreCase("desktop")) {
+                // Cliente conectado desde un cliente de escritorio
+                desktop += 1;
+                executeKillCommand(getFirstProcess());
+                executeDisplayCommandPantalla("conexion app: "+app+" conexion desktop: "+desktop);
+
+            }
+        }       
         // Saludem personalment al nou client
         JSONObject objWlc = new JSONObject("{}");
         objWlc.put("type", "private");
@@ -119,64 +133,15 @@ public class ChatServer extends WebSocketServer {
         String clientType;
         try {
             JSONObject objRequest = new JSONObject(message);
-            String platform = objRequest.getString("platform");
-            if (platform.equalsIgnoreCase("android")){
-                app = app +1;
-                executeDisplayCommand("conexion app: "+app+" conexion desktop: "+desktop);
-
-                if (objRequest.has("message")){
-                    executeKillCommand(getFirstProcess());
+            if (objRequest.has("message")){
+                String platform = objRequest.getString("platform");
+                executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
-                    executeDisplayCommand(mensaje);
-                    System.out.println(mensaje+", Mensage enviado desde Android");
-                }
-                else if(objRequest.has("image")){
-
-                };
-                
-            }else if(platform.equalsIgnoreCase("desktop")){
-                desktop += 1;
-                executeDisplayCommand("conexion app: "+app+" conexion desktop: "+desktop);
-                if (objRequest.has("message")){
-                    executeKillCommand(getFirstProcess());
-                    String mensaje = objRequest.getString("message");
-                    executeDisplayCommand(mensaje);
-                    System.out.println(mensaje+", Mensage enviado desde Desktop");
-                }
-                else if(objRequest.has("image")){
+                    executeDisplayCommandPantalla(mensaje); 
+            }   else if(objRequest.has("image")){
                     
                 };
-            } else if (platform.equalsIgnoreCase("list")) {
-                // El client demana la llista de tots els clients
-                System.out.println("Client '" + clientId + "'' requests list of clients");
-                sendList(conn);
-
-            } else if (platform.equalsIgnoreCase("private")) {
-                // El client envia un missatge privat a un altre client
-                System.out.println("Client '" + clientId + "'' sends a private message");
-
-                JSONObject objResponse = new JSONObject("{}");
-                objResponse.put("type", "private");
-                objResponse.put("from", clientId);
-                objResponse.put("value", objRequest.getString("value"));
-
-                String destination = objRequest.getString("destination");
-                WebSocket desti = getClientById(destination);
-
-                if (desti != null) {
-                    desti.send(objResponse.toString()); 
-                }
-                
-            } else if (platform.equalsIgnoreCase("broadcast")) {
-                // El client envia un missatge a tots els clients
-                System.out.println("Client '" + clientId + "'' sends a broadcast message to everyone");
-
-                JSONObject objResponse = new JSONObject("{}");
-                objResponse.put("type", "broadcast");
-                objResponse.put("from", clientId);
-                objResponse.put("value", objRequest.getString("value"));
-                broadcast(objResponse.toString());
-            }
+            
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -259,7 +224,7 @@ public class ChatServer extends WebSocketServer {
         return null;
     }
 
-    public static void executeDisplayCommand(String text) {
+    public static void executeDisplayCommandPantalla(String text) {
         try {
             String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 100 -y 10 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
@@ -309,7 +274,21 @@ public class ChatServer extends WebSocketServer {
             e.printStackTrace();
         }
     }
+    public static void killall(String text) {
+        try {
+            String command = "kill all";
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+            Process proceso = processBuilder.start();
 
+            InputStream inputStream = proceso.getInputStream();
+            OutputStream outputStream = proceso.getOutputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            PrintWriter writer = new PrintWriter(outputStream, true);
+            writer.println(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     
 
