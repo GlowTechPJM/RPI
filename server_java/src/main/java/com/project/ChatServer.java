@@ -51,7 +51,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-        executeDisplayCommandPantalla(wifiIP);
+        executeDisplayCommandtexto(wifiIP);
     }
         
     
@@ -64,19 +64,34 @@ public class ChatServer extends WebSocketServer {
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
         String clientPlatform = handshake.getFieldValue("platform"); // Obtiene el valor del campo "platform" del handshake
+        try {
+            JSONObject objRequest = new JSONObject(clientPlatform);
+            if (objRequest.has("message")){
+                    executeKillCommand(getFirstProcess());
+                    String mensaje = objRequest.getString("message");
+                    executeDisplayCommandtexto(mensaje); 
+            }   else if(objRequest.has("image")){
+                    executeKillCommand(getFirstProcess());
+                    String image = objRequest.getString("image");
+                    executeDisplayCommandimage(image);
+                };
+            
 
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         if (clientPlatform != null) {
             // Realiza acciones basadas en la plataforma del cliente
             if (clientPlatform.equalsIgnoreCase("android")) {
                 // Cliente conectado desde una aplicación Android
                 app = app +1;
                 executeKillCommand(getFirstProcess());
-                executeDisplayCommandPantalla("conexion app: "+app+" conexion desktop: "+desktop);
+                executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
             } else if (clientPlatform.equalsIgnoreCase("desktop")) {
                 // Cliente conectado desde un cliente de escritorio
                 desktop += 1;
                 executeKillCommand(getFirstProcess());
-                executeDisplayCommandPantalla("conexion app: "+app+" conexion desktop: "+desktop);
+                executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
 
             }
         }       
@@ -134,12 +149,13 @@ public class ChatServer extends WebSocketServer {
         try {
             JSONObject objRequest = new JSONObject(message);
             if (objRequest.has("message")){
-                String platform = objRequest.getString("platform");
-                executeKillCommand(getFirstProcess());
+                    executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
-                    executeDisplayCommandPantalla(mensaje); 
+                    executeDisplayCommandtexto(mensaje); 
             }   else if(objRequest.has("image")){
-                    
+                    executeKillCommand(getFirstProcess());
+                    String image = objRequest.getString("image");
+                    executeDisplayCommandimage(image);
                 };
             
 
@@ -224,7 +240,7 @@ public class ChatServer extends WebSocketServer {
         return null;
     }
 
-    public static void executeDisplayCommandPantalla(String text) {
+    public static void executeDisplayCommandtexto(String text) {
         try {
             String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 100 -y 10 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
@@ -235,6 +251,21 @@ public class ChatServer extends WebSocketServer {
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             PrintWriter writer = new PrintWriter(outputStream, true);
             writer.println(text);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public static void executeDisplayCommandimage(String image) {
+        try {
+            String command = "cd ~/dev/rpi-rgb-led-matrix && ./led-image-viewer -C --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"+image;
+            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
+            Process proceso = processBuilder.start();
+
+            InputStream inputStream = proceso.getInputStream();
+            OutputStream outputStream = proceso.getOutputStream();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+            PrintWriter writer = new PrintWriter(outputStream, true);
+            writer.println(image);
         } catch (Exception e) {
             e.printStackTrace();
         }
