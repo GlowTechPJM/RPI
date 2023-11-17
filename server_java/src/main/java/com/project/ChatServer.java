@@ -161,17 +161,17 @@ public class ChatServer extends WebSocketServer {
                     String password = objRequest.getString("password");
                     if (password.equals(toocheck)){
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("descripcion", "El usuario y la contraseña es correcta");
+                        objResponse.put("validación", "correcto");
                         conn.send(objResponse.toString());
                     }else{
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("descripcion", "la contraseña es incorrecta");
+                        objResponse.put("validación", "incorrecto");
                         conn.send(objResponse.toString());
                     }
                     
                 }else{
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("confirmacion", "No existe ese usuario");
+                        objResponse.put("validación", "incorrecto");
                         conn.send(objResponse.toString());
                 }
             }
