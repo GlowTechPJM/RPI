@@ -7,8 +7,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.io.OutputStream;  // Make sure this import is correct
-
-
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
@@ -25,11 +24,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 
-
-
-
-
-
 public class ChatServer extends WebSocketServer {
 
     static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
@@ -37,15 +31,26 @@ public class ChatServer extends WebSocketServer {
     String firstprocces;
     int app = 0;
     int desktop = 0;
+    
+
 
     public ChatServer (int port) {
         super(new InetSocketAddress(port));
+        
     }
     @Override
     public void onStart() {
         // Quan el servidor s'inicia
         String wifiIP = metodos.getWifiIP();
         int port = getAddress().getPort();
+        // Crear un HashMap para almacenar usuarios y contraseñas
+        HashMap<String, String> usuarios = new HashMap<>();
+
+        // Agregar usuarios y contraseñas al HashMap
+        usuarios.put("usuario1", "contraseña1");
+        usuarios.put("usuario2", "contraseña2");
+        usuarios.put("usuario3", "contraseña3");
+
         System.out.println("WebSockets server running at: ws://" + wifiIP + ":" + port);
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
@@ -146,9 +151,31 @@ public class ChatServer extends WebSocketServer {
         // Quan arriba un missatge
         String clientId = getConnectionId(conn);
         String clientType;
+        HashMap<String, String> usuarios = metodos.getUsers();
         try {
             JSONObject objRequest = new JSONObject(message);
-            if (objRequest.has("message")){
+            if (objRequest.has("user")){
+                String usuario = objRequest.getString("user");
+                if (usuarios.containsKey(usuario)){
+                    String toocheck = usuarios.get(usuario);
+                    String password = objRequest.getString("password");
+                    if (password.equals(toocheck)){
+                        JSONObject objResponse = new JSONObject("{}");
+                        objResponse.put("descripcion", "El usuario y la contraseña es correcta");
+                        conn.send(objResponse.toString());
+                    }else{
+                        JSONObject objResponse = new JSONObject("{}");
+                        objResponse.put("descripcion", "la contraseña es incorrecta");
+                        conn.send(objResponse.toString());
+                    }
+                    
+                }else{
+                        JSONObject objResponse = new JSONObject("{}");
+                        objResponse.put("confirmacion", "No existe ese usuario");
+                        conn.send(objResponse.toString());
+                }
+            }
+            else if (objRequest.has("message")){
                     executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
                     executeDisplayCommandtexto(mensaje); 

@@ -10,6 +10,7 @@ import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.util.Base64.OutputStream;
@@ -25,14 +26,23 @@ public class metodos {
                 InetAddress inetAddress = inetAddresses.nextElement();
                 if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress() && inetAddress.isSiteLocalAddress()) {
                     return inetAddress.getHostAddress();
+                    }
                 }
             }
-        }
-    } catch (SocketException e) {
+        } catch (SocketException e) {
         e.printStackTrace();
     }
     return "No se encontró una dirección IP de WiFi.";
-}
+    }
+    public static HashMap<String, String> getUsers(){
+        HashMap<String, String> usuarios = new HashMap<>();
+
+        // Agregar usuarios y contraseñas al HashMap
+        usuarios.put("usuario1", "contraseña1");
+        usuarios.put("usuario2", "contraseña2");
+        usuarios.put("usuario3", "contraseña3");
+        return usuarios; 
+    }
 }
 
 
