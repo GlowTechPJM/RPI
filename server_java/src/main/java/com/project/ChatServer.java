@@ -157,6 +157,7 @@ public class ChatServer extends WebSocketServer {
                     executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
                     executeDisplayCommandtexto(mensaje); 
+            }
             if(objRequest.has("image")){
                     executeKillCommand(getFirstProcess());
                     String image = objRequest.getString("image");
