@@ -43,14 +43,6 @@ public class ChatServer extends WebSocketServer {
         // Quan el servidor s'inicia
         String wifiIP = metodos.getWifiIP();
         int port = getAddress().getPort();
-        // Crear un HashMap para almacenar usuarios y contraseñas
-        HashMap<String, String> usuarios = new HashMap<>();
-
-        // Agregar usuarios y contraseñas al HashMap
-        usuarios.put("usuario1", "contraseña1");
-        usuarios.put("usuario2", "contraseña2");
-        usuarios.put("usuario3", "contraseña3");
-
         System.out.println("WebSockets server running at: ws://" + wifiIP + ":" + port);
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
@@ -71,35 +63,26 @@ public class ChatServer extends WebSocketServer {
         String clientPlatform = handshake.getFieldValue("platform"); // Obtiene el valor del campo "platform" del handshake
         try {
             JSONObject objRequest = new JSONObject(clientPlatform);
-            if (objRequest.has("message")){
+            if (clientPlatform != null) {
+                // Realiza acciones basadas en la plataforma del cliente
+                if (clientPlatform.equalsIgnoreCase("android")) {
+                    // Cliente conectado desde una aplicación Android
+                    app = app +1;
                     executeKillCommand(getFirstProcess());
-                    String mensaje = objRequest.getString("message");
-                    executeDisplayCommandtexto(mensaje); 
-            }   else if(objRequest.has("image")){
+                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                } else if (clientPlatform.equalsIgnoreCase("desktop")) {
+                    // Cliente conectado desde un cliente de escritorio
+                    desktop += 1;
                     executeKillCommand(getFirstProcess());
-                    String image = objRequest.getString("image");
-                    executeDisplayCommandimage(image);
-                };
-            
+                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
 
+                }
+            }  
+                     
         } catch (Exception e) {
             e.printStackTrace();
         }
-        if (clientPlatform != null) {
-            // Realiza acciones basadas en la plataforma del cliente
-            if (clientPlatform.equalsIgnoreCase("android")) {
-                // Cliente conectado desde una aplicación Android
-                app = app +1;
-                executeKillCommand(getFirstProcess());
-                executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
-            } else if (clientPlatform.equalsIgnoreCase("desktop")) {
-                // Cliente conectado desde un cliente de escritorio
-                desktop += 1;
-                executeKillCommand(getFirstProcess());
-                executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
-
-            }
-        }       
+             
         // Saludem personalment al nou client
         JSONObject objWlc = new JSONObject("{}");
         objWlc.put("type", "private");
@@ -209,6 +192,7 @@ public class ChatServer extends WebSocketServer {
                 String line = reader.readLine();
 
                 if (line.equalsIgnoreCase("exit")) {
+                    executeKillCommand(getFirstProcess());
                     running = false;
                 }
             }
