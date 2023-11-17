@@ -131,32 +131,33 @@ public class ChatServer extends WebSocketServer {
                     executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
 
                 }
-            } else if (objRequest.has("user")){
+            } 
+            if (objRequest.has("user")){
                 String usuario = objRequest.getString("user");
                 if (usuarios.containsKey(usuario)){
                     String toocheck = usuarios.get(usuario);
                     String password = objRequest.getString("password");
                     if (password.equals(toocheck)){
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("validación", "correcto");
+                        objResponse.put("validacion", "correcto");
                         conn.send(objResponse.toString());
                     }else{
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("validación", "incorrecto");
+                        objResponse.put("validacion", "incorrecto");
                         conn.send(objResponse.toString());
                     }
                     
                 }else{
                         JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("validación", "incorrecto");
+                        objResponse.put("validacion", "incorrecto");
                         conn.send(objResponse.toString());
                 }
             }
-            else if (objRequest.has("message")){
+            if (objRequest.has("message")){
                     executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
                     executeDisplayCommandtexto(mensaje); 
-            }   else if(objRequest.has("image")){
+            else if(objRequest.has("image")){
                     executeKillCommand(getFirstProcess());
                     String image = objRequest.getString("image");
                     executeDisplayCommandimage(image);
@@ -309,24 +310,7 @@ public class ChatServer extends WebSocketServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-    public static void killall(String text) {
-        try {
-            String command = "kill all";
-            ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-            Process proceso = processBuilder.start();
-
-            InputStream inputStream = proceso.getInputStream();
-            OutputStream outputStream = proceso.getOutputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            PrintWriter writer = new PrintWriter(outputStream, true);
-            writer.println(text);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    
+    } 
 
 
 public void setOnClientConnectedListener(Object object) {
