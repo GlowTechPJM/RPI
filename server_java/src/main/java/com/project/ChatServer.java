@@ -60,28 +60,7 @@ public class ChatServer extends WebSocketServer {
         // eliminamos la primera comanda
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
-        String clientPlatform = handshake.getFieldValue("platform"); // Obtiene el valor del campo "platform" del handshake
-        try {
-            JSONObject objRequest = new JSONObject(clientPlatform);
-            if (clientPlatform != null) {
-                // Realiza acciones basadas en la plataforma del cliente
-                if (clientPlatform.equalsIgnoreCase("android")) {
-                    // Cliente conectado desde una aplicación Android
-                    app = app +1;
-                    executeKillCommand(getFirstProcess());
-                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
-                } else if (clientPlatform.equalsIgnoreCase("desktop")) {
-                    // Cliente conectado desde un cliente de escritorio
-                    desktop += 1;
-                    executeKillCommand(getFirstProcess());
-                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
-
-                }
-            }  
-                     
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        
              
         // Saludem personalment al nou client
         JSONObject objWlc = new JSONObject("{}");
@@ -137,7 +116,22 @@ public class ChatServer extends WebSocketServer {
         HashMap<String, String> usuarios = metodos.getUsers();
         try {
             JSONObject objRequest = new JSONObject(message);
-            if (objRequest.has("user")){
+            if (objRequest.has("platform")) {
+                String platform=objRequest.getString("platform");
+                // Realiza acciones basadas en la plataforma del cliente
+                if (platform.equalsIgnoreCase("android")) {
+                    // Cliente conectado desde una aplicación Android
+                    app = app +1;
+                    executeKillCommand(getFirstProcess());
+                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                } else if (platform.equalsIgnoreCase("desktop")) {
+                    // Cliente conectado desde un cliente de escritorio
+                    desktop += 1;
+                    executeKillCommand(getFirstProcess());
+                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+
+                }
+            } else if (objRequest.has("user")){
                 String usuario = objRequest.getString("user");
                 if (usuarios.containsKey(usuario)){
                     String toocheck = usuarios.get(usuario);
