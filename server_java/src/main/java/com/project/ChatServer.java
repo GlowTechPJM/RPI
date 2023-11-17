@@ -23,6 +23,8 @@ import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.processing.Processor;
+
 
 public class ChatServer extends WebSocketServer {
 
@@ -31,6 +33,7 @@ public class ChatServer extends WebSocketServer {
     String firstprocces;
     int app = 0;
     int desktop = 0;
+    Process proceso;
     
 
 
@@ -48,7 +51,7 @@ public class ChatServer extends WebSocketServer {
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-        executeDisplayCommandtexto(wifiIP);
+        proceso= executeDisplayCommandtexto(wifiIP);
     }
         
     
@@ -122,14 +125,18 @@ public class ChatServer extends WebSocketServer {
                 if (platform.equalsIgnoreCase("android")) {
                     // Cliente conectado desde una aplicación Android
                     app = app +1;
-                    executeKillCommand(getFirstProcess());
-                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                    if (proceso != null){
+                        proceso.destroy();
+                        proceso =executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                    }
+                    
                 } else if (platform.equalsIgnoreCase("desktop")) {
                     // Cliente conectado desde un cliente de escritorio
                     desktop += 1;
-                    executeKillCommand(getFirstProcess());
-                    executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
-
+                    if (proceso != null){
+                        proceso.destroy();
+                        proceso=executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                    }
                 }
             } 
             if (objRequest.has("user")){
@@ -154,14 +161,18 @@ public class ChatServer extends WebSocketServer {
                 }
             }
             if (objRequest.has("message")){
-                    executeKillCommand(getFirstProcess());
                     String mensaje = objRequest.getString("message");
-                    executeDisplayCommandtexto(mensaje); 
+                    if (proceso != null){
+                        proceso.destroy();
+                        proceso = executeDisplayCommandtexto(mensaje);
+                    } 
             }
             if(objRequest.has("image")){
-                    executeKillCommand(getFirstProcess());
                     String image = objRequest.getString("image");
-                    executeDisplayCommandimage(image);
+                    if (proceso != null){
+                        proceso.destroy();
+                        executeDisplayCommandimage(image);
+                    }
                 };
             
 
@@ -247,12 +258,13 @@ public class ChatServer extends WebSocketServer {
         return null;
     }
 
-    public static void executeDisplayCommandtexto(String text) {
+    public static Process executeDisplayCommandtexto(String text) {
+        Process proceso = null;
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 100 -y 10 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+text;
+            String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 100 -y 10 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse " + text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-            Process proceso = processBuilder.start();
-
+            proceso = processBuilder.start();
+    
             InputStream inputStream = proceso.getInputStream();
             OutputStream outputStream = proceso.getOutputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -261,6 +273,7 @@ public class ChatServer extends WebSocketServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return proceso;
     }
     public static void executeDisplayCommandimage(String image) {
         try {
