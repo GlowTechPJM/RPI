@@ -38,9 +38,9 @@ public class metodos {
         HashMap<String, String> usuarios = new HashMap<>();
 
         // Agregar usuarios y contraseñas al HashMap
-        usuarios.put("usuario1", "contraseña1");
-        usuarios.put("usuario2", "contraseña2");
-        usuarios.put("usuario3", "contraseña3");
+        usuarios.put("usuario1", "contra1");
+        usuarios.put("usuario2", "contra2");
+        usuarios.put("usuario3", "contra3");
         return usuarios; 
     }
 }
