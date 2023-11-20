@@ -120,6 +120,7 @@ public class ChatServer extends WebSocketServer {
                 if (usuarios.containsKey(usuario)){
                     String toocheck = usuarios.get(usuario);
                     String password = objRequest.getString("password");
+
                     if (password.equals(toocheck)){
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "correcto");
@@ -144,6 +145,8 @@ public class ChatServer extends WebSocketServer {
             }
             if (objRequest.has("message")){
                     String mensaje = objRequest.getString("message");
+                    System.err.println("entra mensaje");
+                    System.out.println();
                     if (proceso != null){
                         proceso.destroy();
                         proceso = executeDisplayCommandtexto(mensaje);
