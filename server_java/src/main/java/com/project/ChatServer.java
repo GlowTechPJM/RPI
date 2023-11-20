@@ -152,6 +152,18 @@ public class ChatServer extends WebSocketServer {
                         executeDisplayCommandimage(image);
                     }
                 };
+            if(objRequest.has("disconnect")){
+                String platform=objRequest.getString("platform");
+                // Realiza acciones basadas en la plataforma del cliente
+                if (platform.equalsIgnoreCase("android")) {
+                    // Cliente conectado desde una aplicación Android
+                    app -= 1;
+                    
+                } else if (platform.equalsIgnoreCase("desktop")) {
+                    // Cliente conectado desde un cliente de escritorio
+                    desktop -= 1;
+                }
+            }
             
 
         } catch (Exception e) {
