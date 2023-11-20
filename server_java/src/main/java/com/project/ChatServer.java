@@ -63,31 +63,6 @@ public class ChatServer extends WebSocketServer {
         // eliminamos la primera comanda
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
-        
-             
-        // Saludem personalment al nou client
-        JSONObject objWlc = new JSONObject("{}");
-        objWlc.put("type", "private");
-        objWlc.put("from", "server");
-        objWlc.put("value", "Bienvenido a la aplicación");
-        conn.send(objWlc.toString()); 
-
-        // Li enviem el seu identificador
-        JSONObject objId = new JSONObject("{}");
-        objId.put("type", "id");
-        objId.put("from", "server");
-        objId.put("value", clientId);
-        conn.send(objId.toString()); 
-
-        // Enviem al client la llista amb tots els clients connectats
-        sendList(conn);
-
-        // Enviem la direcció URI del nou client a tothom 
-        JSONObject objCln = new JSONObject("{}");
-        objCln.put("type", "connected");
-        objCln.put("from", "server");
-        objCln.put("id", clientId);
-        broadcast(objCln.toString());
 
         // Mostrem per pantalla (servidor) la nova connexió
         String host = conn.getRemoteSocketAddress().getAddress().getHostAddress();
