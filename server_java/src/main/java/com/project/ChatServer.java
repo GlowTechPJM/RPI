@@ -115,6 +115,7 @@ public class ChatServer extends WebSocketServer {
                 }
             } 
             if (objRequest.has("user")){
+                System.err.println("intento de inicio de sesion");
                 String usuario = objRequest.getString("user");
                 if (usuarios.containsKey(usuario)){
                     String toocheck = usuarios.get(usuario);
