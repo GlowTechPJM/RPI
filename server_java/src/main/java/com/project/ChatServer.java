@@ -113,6 +113,7 @@ public class ChatServer extends WebSocketServer {
                 }
             } 
             if (objRequest.has("user")){
+                String platform=objRequest.getString("userPlatform");
                 System.err.println("intento de inicio de sesion");
                 String usuario = objRequest.getString("user");
                 if (usuarios.containsKey(usuario)){
@@ -134,32 +135,56 @@ public class ChatServer extends WebSocketServer {
                     }
                     
                 }else{
+                    if (platform.equalsIgnoreCase("android")) {
                         for (String i : movil){
                             if(i.equals(clientId)){
                                 movil.remove(i);
                             }
                         }
+                    }else if (platform.equalsIgnoreCase("desktop")){
                         for (String i : desk){
                             if(i.equals(clientId)){
                                 desk.remove(i);
                             }
                         }
-                        JSONObject objResponse = new JSONObject("{}");
-                        objResponse.put("validacion", "incorrecto");
-                        String jsonString = objResponse.toString();
-                        System.out.println(jsonString);
-                        conn.send(jsonString);
-
+                    }
+                    JSONObject objResponse = new JSONObject("{}");
+                    objResponse.put("validacion", "incorrecto");
+                    String jsonString = objResponse.toString();
+                    System.out.println(jsonString);
+                    conn.send(jsonString);
                 }
             }
             if (objRequest.has("message")){
-                    String mensaje = objRequest.getString("message");
-                    System.err.println("entra mensaje");
-                    System.out.println();
-                    if (proceso != null){
-                        proceso.destroy();
-                        proceso = executeDisplayCommandtexto(mensaje);
-                    } 
+                String platform=objRequest.getString("msgPlatform");
+                if (platform.equalsIgnoreCase("android")) {
+                    for (String j : movil){
+                        if (j.equals(clientId)){
+                            String mensaje = objRequest.getString("message");
+                            System.err.println("entra mensaje");
+                            System.out.println();
+                            if (proceso != null){
+                                proceso.destroy();
+                                proceso = executeDisplayCommandtexto(mensaje);
+                            }
+                        }
+                    }  
+                }else if (platform.equalsIgnoreCase("desktop")){
+                    for (String j : desk){
+                        if (j.equals(clientId)){
+                            String mensaje = objRequest.getString("message");
+                            System.err.println("entra mensaje");
+                            System.out.println();
+                            if (proceso != null){
+                                proceso.destroy();
+                                proceso = executeDisplayCommandtexto(mensaje);
+                            }
+                        }
+                    }
+                }else{
+                        System.out.println("no estas connectado no valida");
+                }
+                 
             }
             if(objRequest.has("imagen")){
                     String pathimg = "C:\\Users\\maner\\Documents\\GitHub\\RPI\\server_java\\data\\imagen.png";
@@ -177,6 +202,18 @@ public class ChatServer extends WebSocketServer {
 
                                 }
                             }
+                        }else if(plt.equals("desktop")){
+                            for(String f : desk){
+                                if (f.equals(clientId)){
+                                    convertirImagen(image, pathimg);
+                                    if (proceso != null){
+                                        proceso.destroy();
+                                        proceso = executeDisplayCommandimage(pathimg);
+                                    }
+                                }
+                            }
+                        }else{
+                            System.out.println("no estas connectado no valida");
                         }
                     }
                 };
