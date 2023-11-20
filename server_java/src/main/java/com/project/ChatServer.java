@@ -130,7 +130,6 @@ public class ChatServer extends WebSocketServer {
                         objResponse.put("validacion", "incorrecto");
                         String jsonString = objResponse.toString();
                         System.out.println(jsonString);
-
                         conn.send(jsonString);
                     }
                     
@@ -151,10 +150,11 @@ public class ChatServer extends WebSocketServer {
             }
             if(objRequest.has("imagen")){
                     String image = objRequest.getString("imagen");
-                    if (proceso != null){
-                        proceso.destroy();
-                        executeDisplayCommandimage(image);
-                    }
+                    System.out.println(image);
+                    //if (proceso != null){
+                        //proceso.destroy();
+                        //executeDisplayCommandimage(image);
+                    //}
                 };
             if(objRequest.has("disconnect")){
                 String platform=objRequest.getString("platform");
