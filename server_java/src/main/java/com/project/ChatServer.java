@@ -194,6 +194,7 @@ public class ChatServer extends WebSocketServer {
                         if (plt.equals("android")){
                             for(String f : movil){
                                 if (f.equals(clientId)){
+                                    System.out.println(image);
                                     convertirImagen(image, pathimg);
                                     if (proceso != null){
                                         proceso.destroy();
