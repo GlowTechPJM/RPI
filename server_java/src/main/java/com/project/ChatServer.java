@@ -123,11 +123,14 @@ public class ChatServer extends WebSocketServer {
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "correcto");
                         String jsonString = objResponse.toString();
+                        System.out.println(jsonString);
                         conn.send(jsonString);
                     }else{
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "incorrecto");
                         String jsonString = objResponse.toString();
+                        System.out.println(jsonString);
+
                         conn.send(jsonString);
                     }
                     
@@ -135,6 +138,7 @@ public class ChatServer extends WebSocketServer {
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "incorrecto");
                         String jsonString = objResponse.toString();
+                        System.out.println(jsonString);
                         conn.send(jsonString);
                 }
             }
