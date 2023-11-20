@@ -179,21 +179,25 @@ public class ChatServer extends WebSocketServer {
                             }
                         }
                     }
-                    //if (proceso != null){
-                        //proceso.destroy();
-                        //executeDisplayCommandimage(image);
-                    //}
                 };
             if(objRequest.has("disconnect")){
                 String platform=objRequest.getString("platform");
                 // Realiza acciones basadas en la plataforma del cliente
                 if (platform.equalsIgnoreCase("android")) {
                     // Cliente conectado desde una aplicación Android
-                    
+                    for (String k : movil){
+                        if(k.equals(clientId)){
+                            movil.remove(k);
+                        }
+                    }
                     
                 } else if (platform.equalsIgnoreCase("desktop")) {
                     // Cliente conectado desde un cliente de escritorio
-                    desktop -= 1;
+                    for (String k : desk){
+                        if(k.equals(clientId)){
+                            desk.remove(k);
+                        }
+                    }
                 }
             }
             
