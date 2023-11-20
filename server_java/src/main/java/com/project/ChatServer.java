@@ -1,12 +1,6 @@
 package com.project;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
-import java.io.OutputStream;  // Make sure this import is correct
 import java.util.HashMap;
 import java.util.concurrent.TimeUnit;
 
@@ -16,14 +10,16 @@ import org.java_websocket.server.WebSocketServer;
 import org.json.JSONObject;
 
 import com.pi4j.util.StringUtil;
-
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.processing.Processor;
+
+// Make sure this import is correct
+import java.io.*;
+import java.util.Base64;
 
 
 public class ChatServer extends WebSocketServer {
@@ -33,8 +29,10 @@ public class ChatServer extends WebSocketServer {
     String firstprocces;
     int app = 0;
     int desktop = 0;
-    Process proceso;
-    
+    static Process proceso;
+    List<String> movil = new ArrayList<>();
+    List<String> desk = new ArrayList<>();
+
 
 
     public ChatServer (int port) {
@@ -90,7 +88,7 @@ public class ChatServer extends WebSocketServer {
     public void onMessage(WebSocket conn, String message) {
         // Quan arriba un missatge
         String clientId = getConnectionId(conn);
-        String clientType;
+
         HashMap<String, String> usuarios = metodos.getUsers();
         try {
             JSONObject objRequest = new JSONObject(message);
@@ -99,18 +97,18 @@ public class ChatServer extends WebSocketServer {
                 // Realiza acciones basadas en la plataforma del cliente
                 if (platform.equalsIgnoreCase("android")) {
                     // Cliente conectado desde una aplicación Android
-                    app = app +1;
                     if (proceso != null){
+                        movil.add(clientId);
                         proceso.destroy();
-                        proceso =executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                        proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
                     }
                     
                 } else if (platform.equalsIgnoreCase("desktop")) {
                     // Cliente conectado desde un cliente de escritorio
-                    desktop += 1;
                     if (proceso != null){
+                        desk.add(clientId);
                         proceso.destroy();
-                        proceso=executeDisplayCommandtexto("conexion app: "+app+" conexion desktop: "+desktop);
+                        proceso=executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
                     }
                 }
             } 
@@ -136,11 +134,22 @@ public class ChatServer extends WebSocketServer {
                     }
                     
                 }else{
+                        for (String i : movil){
+                            if(i.equals(clientId)){
+                                movil.remove(i);
+                            }
+                        }
+                        for (String i : desk){
+                            if(i.equals(clientId)){
+                                desk.remove(i);
+                            }
+                        }
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "incorrecto");
                         String jsonString = objResponse.toString();
                         System.out.println(jsonString);
                         conn.send(jsonString);
+
                 }
             }
             if (objRequest.has("message")){
@@ -153,8 +162,23 @@ public class ChatServer extends WebSocketServer {
                     } 
             }
             if(objRequest.has("imagen")){
+                    String pathimg = "C:\\Users\\maner\\Documents\\GitHub\\RPI\\server_java\\data\\imagen.png";
                     String image = objRequest.getString("imagen");
-                    System.out.println(image);
+                    if (objRequest.has("imgPlatform")){
+                        String plt = objRequest.getString("imgPlatform");
+                        if (plt.equals("android")){
+                            for(String f : movil){
+                                if (f.equals(clientId)){
+                                    convertirImagen(image, pathimg);
+                                    if (proceso != null){
+                                        proceso.destroy();
+                                        proceso = executeDisplayCommandimage(pathimg);
+                                    }
+
+                                }
+                            }
+                        }
+                    }
                     //if (proceso != null){
                         //proceso.destroy();
                         //executeDisplayCommandimage(image);
@@ -165,7 +189,7 @@ public class ChatServer extends WebSocketServer {
                 // Realiza acciones basadas en la plataforma del cliente
                 if (platform.equalsIgnoreCase("android")) {
                     // Cliente conectado desde una aplicación Android
-                    app -= 1;
+                    
                     
                 } else if (platform.equalsIgnoreCase("desktop")) {
                     // Cliente conectado desde un cliente de escritorio
@@ -273,11 +297,11 @@ public class ChatServer extends WebSocketServer {
         }
         return proceso;
     }
-    public static void executeDisplayCommandimage(String image) {
+    public static Process executeDisplayCommandimage(String image) {
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && ./led-image-viewer -C --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse"+image;
+            String command = "cd ~/dev/rpi-rgb-led-matrix && ./led-image-viewer -C --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+image;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
-            Process proceso = processBuilder.start();
+            proceso = processBuilder.start();
 
             InputStream inputStream = proceso.getInputStream();
             OutputStream outputStream = proceso.getOutputStream();
@@ -287,6 +311,7 @@ public class ChatServer extends WebSocketServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return proceso;
     }
     public static String getFirstProcess() {
         try {
@@ -322,7 +347,20 @@ public class ChatServer extends WebSocketServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    } 
+    }
+    public static void convertirImagen(String base64String, String imagePath) {
+        try {
+            byte[] imageBytes = java.util.Base64.getDecoder().decode(base64String);
+
+            OutputStream outputStream = new FileOutputStream(imagePath);
+            outputStream.write(imageBytes);
+            outputStream.close();
+
+            System.out.println("Imagen decodificada y guardada como " + imagePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 public void setOnClientConnectedListener(Object object) {
