@@ -218,7 +218,7 @@ public class ChatServer extends WebSocketServer {
                     }
                 };
             if(objRequest.has("disconnect")){
-                String platform=objRequest.getString("platform");
+                String platform=objRequest.getString("disconnect");
                 // Realiza acciones basadas en la plataforma del cliente
                 if (platform.equalsIgnoreCase("android")) {
                     // Cliente conectado desde una aplicación Android
