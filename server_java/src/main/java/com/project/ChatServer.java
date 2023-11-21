@@ -72,7 +72,20 @@ public class ChatServer extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         // Quan un client es desconnecta
         String clientId = getConnectionId(conn);
-
+        for (String h:movil){
+            if (clientId.equals(h)){
+                movil.remove(h);
+            }
+        }
+        for (String h:desk){
+            if (clientId.equals(h)){
+                desk.remove(h);
+            }
+        }
+        if (proceso != null){
+            proceso.destroy();
+            proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
+        }
         // Informem a tothom que el client s'ha desconnectat
         JSONObject objCln = new JSONObject("{}");
         objCln.put("type", "disconnected");
@@ -217,28 +230,7 @@ public class ChatServer extends WebSocketServer {
                             System.out.println("no estas connectado no valida");
                         }
                     }
-                };
-            if(objRequest.has("disconnect")){
-                String platform=objRequest.getString("disconnect");
-                // Realiza acciones basadas en la plataforma del cliente
-                if (platform.equalsIgnoreCase("android")) {
-                    // Cliente conectado desde una aplicación Android
-                    for (String k : movil){
-                        if(k.equals(clientId)){
-                            movil.remove(k);
-                        }
-                    }
-                    
-                } else if (platform.equalsIgnoreCase("desktop")) {
-                    // Cliente conectado desde un cliente de escritorio
-                    for (String k : desk){
-                        if(k.equals(clientId)){
-                            desk.remove(k);
-                        }
-                    }
-                }
-            }
-            
+                };          
 
         } catch (Exception e) {
             e.printStackTrace();
