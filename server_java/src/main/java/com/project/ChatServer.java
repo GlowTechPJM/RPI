@@ -221,6 +221,7 @@ public class ChatServer extends WebSocketServer {
                         }else if(plt.equals("desktop")){
                             for(String f : desk){
                                 if (f.equals(clientId)){
+                                    System.out.println(image);
                                     convertirImagen(image, pathimg);
                                     if (proceso != null){
                                         proceso.destroy();
