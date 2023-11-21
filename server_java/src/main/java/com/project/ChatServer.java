@@ -2,6 +2,7 @@ package com.project;
 
 import java.net.InetSocketAddress;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 
 import org.java_websocket.WebSocket;
@@ -74,20 +75,22 @@ public class ChatServer extends WebSocketServer {
         String clientId = getConnectionId(conn);
         if (proceso != null){
             proceso.destroy();
-            
-            for (String h:movil){
-                if (clientId.equals(h)){
-                    movil.remove(h);
-                    proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
-
+            Iterator<String> movilIterator = movil.iterator();
+            while (movilIterator.hasNext()) {
+                String h = movilIterator.next();
+                if (clientId.equals(h)) {
+                    movilIterator.remove();
+                    proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
             }
-            for (String h:desk){
-                if (clientId.equals(h)){
-                    desk.remove(h);
-                    proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
-
+            Iterator<String> deskIterator = desk.iterator();
+            while (deskIterator.hasNext()) {
+                String h = deskIterator.next();
+                if (clientId.equals(h)) {
+                    deskIterator.remove();
+                    proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
+            
         }
         System.out.println("Client disconnected '" + clientId + "'");
         }
