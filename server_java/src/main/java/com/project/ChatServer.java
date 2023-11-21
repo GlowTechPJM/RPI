@@ -72,22 +72,29 @@ public class ChatServer extends WebSocketServer {
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
         // Quan un client es desconnecta
         String clientId = getConnectionId(conn);
-        for (String h:movil){
-            if (clientId.equals(h)){
-                movil.remove(h);
-            }
-        }
-        for (String h:desk){
-            if (clientId.equals(h)){
-                desk.remove(h);
-            }
-        }
         if (proceso != null){
             proceso.destroy();
-            proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
+            
+            for (String h:movil){
+                if (clientId.equals(h)){
+                    movil.remove(h);
+                    proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
+
+                }
+            }
+            for (String h:desk){
+                if (clientId.equals(h)){
+                    desk.remove(h);
+                    proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
+
+                }
         }
-        // Mostrem per pantalla (servidor) la desconnexió
         System.out.println("Client disconnected '" + clientId + "'");
+        }
+        
+        
+        // Mostrem per pantalla (servidor) la desconnexió
+        
     }
 
     @Override
