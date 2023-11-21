@@ -86,13 +86,6 @@ public class ChatServer extends WebSocketServer {
             proceso.destroy();
             proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
         }
-        // Informem a tothom que el client s'ha desconnectat
-        JSONObject objCln = new JSONObject("{}");
-        objCln.put("type", "disconnected");
-        objCln.put("from", "server");
-        objCln.put("id", clientId);
-        broadcast(objCln.toString());
-
         // Mostrem per pantalla (servidor) la desconnexió
         System.out.println("Client disconnected '" + clientId + "'");
     }
