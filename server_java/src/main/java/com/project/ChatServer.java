@@ -341,7 +341,7 @@ public class ChatServer extends WebSocketServer {
     }
     public static Process executeDisplayCommandimage(String image) {
         try {
-            String command = "cd ~/dev/rpi-rgb-led-matrix && ./led-image-viewer -C --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+image;
+            String command = "cd ~/dev/rpi-rgb-led-matrix && led-image-viewer -C --led-cols=64 --led-rows=64 --led-slowdown-gpio=4 --led-no-hardware-pulse "+image;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
             proceso = processBuilder.start();
 
