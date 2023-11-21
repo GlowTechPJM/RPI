@@ -152,12 +152,14 @@ public class ChatServer extends WebSocketServer {
                         for (String i : movil){
                             if(i.equals(clientId)){
                                 movil.remove(i);
+                                proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
                             }
                         }
                     }else if (platform.equalsIgnoreCase("desktop")){
                         for (String i : desk){
                             if(i.equals(clientId)){
                                 desk.remove(i);
+                                proceso =executeDisplayCommandtexto("conexion app: "+movil.size()+" conexion desktop: "+desk.size());
                             }
                         }
                     }
