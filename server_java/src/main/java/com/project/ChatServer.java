@@ -187,7 +187,7 @@ public class ChatServer extends WebSocketServer {
                  
             }
             if(objRequest.has("imagen")){
-                    String pathimg = "~/data/imagen.png" ;
+                    String pathimg = "~/dev/Desktop/RPI/server_java/data/imagen.png" ;
                     String image = objRequest.getString("imagen");
                     if (objRequest.has("imgPlatform")){
                         String plt = objRequest.getString("imgPlatform");
