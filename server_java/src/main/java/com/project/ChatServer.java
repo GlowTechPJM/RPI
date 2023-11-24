@@ -62,7 +62,7 @@ public class ChatServer extends WebSocketServer {
         // eliminamos la primera comanda
         // Quan un client es connecta
         String clientId = getConnectionId(conn);
-
+        
         // Mostrem per pantalla (servidor) la nova connexió
         String host = conn.getRemoteSocketAddress().getAddress().getHostAddress();
         System.out.println("New client (" + clientId + "): " + host);
@@ -91,8 +91,13 @@ public class ChatServer extends WebSocketServer {
                     proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
             
-        }
-        System.out.println("Client disconnected '" + clientId + "'");
+            }
+            System.out.println("Client disconnected '" + clientId + "'");
+            JSONObject broadcas = new JSONObject("{}");
+            broadcas.put("type", "broadcast");
+            broadcas.put("action", "disconnect");
+            broadcas.put("user", clientId);
+            broadcast(broadcas.toString());
         }
         
         
@@ -142,6 +147,12 @@ public class ChatServer extends WebSocketServer {
                         String jsonString = objResponse.toString();
                         System.out.println(jsonString);
                         conn.send(jsonString);
+                        
+                        JSONObject broadcas = new JSONObject("{}");
+                        broadcas.put("type", "broadcast");
+                        broadcas.put("action", "connect");
+                        broadcas.put("user", clientId);
+                        broadcast(broadcas.toString());
                     }else{
                         JSONObject objResponse = new JSONObject("{}");
                         objResponse.put("validacion", "incorrecto");
@@ -186,7 +197,12 @@ public class ChatServer extends WebSocketServer {
                                 proceso = executeDisplayCommandtexto(mensaje);
                             }
                         }
-                    }  
+                    }
+                    JSONObject broadcas = new JSONObject("{}");
+                        broadcas.put("type", "broadcast");
+                        broadcas.put("action", "message");
+                        broadcas.put("user", clientId);
+                        broadcast(broadcas.toString());  
                 }else if (platform.equalsIgnoreCase("desktop")){
                     for (String j : desk){
                         if (j.equals(clientId)){
@@ -199,45 +215,85 @@ public class ChatServer extends WebSocketServer {
                             }
                         }
                     }
+                    JSONObject broadcas = new JSONObject("{}");
+                        broadcas.put("type", "broadcast");
+                        broadcas.put("action", "message");
+                        broadcas.put("user", clientId);
+                        broadcast(broadcas.toString());  
                 }else{
                         System.out.println("no estas connectado no valida");
                 }
                  
             }
             if(objRequest.has("imagen")){
-                    String pathimg = "/home/ieti/Desktop/RPI/server_java/data/imagen.png" ;
-                    String image = objRequest.getString("imagen");
-                    if (objRequest.has("imgPlatform")){
-                        String plt = objRequest.getString("imgPlatform");
-                        if (plt.equals("android")){
-                            for(String f : movil){
-                                if (f.equals(clientId)){
-                                    System.out.println(image);
-                                    convertirImagen(image, pathimg);
-                                    if (proceso != null){
-                                        proceso.destroy();
-                                        proceso = executeDisplayCommandimage(pathimg);
-                                    }
+                String pathimg = "/home/ieti/Desktop/RPI/server_java/data/imagen.png" ;
+                String image = objRequest.getString("imagen");
+                if (objRequest.has("imgPlatform")){
+                    String plt = objRequest.getString("imgPlatform");
+                    if (plt.equals("android")){
+                        for(String f : movil){
+                            if (f.equals(clientId)){
+                                System.out.println(image);
+                                convertirImagen(image, pathimg);
+                                if (proceso != null){
+                                    proceso.destroy();
+                                    proceso = executeDisplayCommandimage(pathimg);
+                                }
 
+                            }
+                        }
+                        JSONObject broadcas = new JSONObject("{}");
+                        broadcas.put("type", "broadcast");
+                        broadcas.put("action", "message");
+                        broadcas.put("user", clientId);
+                        broadcast(broadcas.toString());  
+                    }else if(plt.equals("desktop")){
+                        for(String f : desk){
+                            if (f.equals(clientId)){
+                                System.out.println(image);
+                                convertirImagen(image, pathimg);
+                                if (proceso != null){
+                                    proceso.destroy();
+                                    proceso = executeDisplayCommandimage(pathimg);
                                 }
                             }
-                        }else if(plt.equals("desktop")){
-                            for(String f : desk){
-                                if (f.equals(clientId)){
-                                    System.out.println(image);
-                                    convertirImagen(image, pathimg);
-                                    if (proceso != null){
-                                        proceso.destroy();
-                                        proceso = executeDisplayCommandimage(pathimg);
-                                    }
-                                }
+                        }
+                        JSONObject broadcas = new JSONObject("{}");
+                        broadcas.put("type", "broadcast");
+                        broadcas.put("action", "message");
+                        broadcas.put("user", clientId);
+                        broadcast(broadcas.toString());  
+                    }else{
+                        System.out.println("no estas connectado no valida");
+                    }
+                }
+            };          
+            if (objRequest.has("connected")){
+                if (objRequest.has("cntPlatform")){ 
+                    String listaMovil = String.join(";", movil);
+                    String listaDesk = String.join(";", desk);               
+                    String platform = objRequest.getString("cntPlatform");
+                    if (platform.equalsIgnoreCase("android")){
+                        for(String f : movil){
+                            if (f.equals(clientId)){
+                                JSONObject listas = new JSONObject("{}");
+                                listas.put("android", listaMovil);
+                                listas.put("desk", listaDesk);
+                                conn.send(listas.toString());
                             }
-                        }else{
-                            System.out.println("no estas connectado no valida");
+                        }
+                    }else if(platform.equalsIgnoreCase("desktop")){
+                        for(String f : desk){
+                            if (f.equals(clientId)){
+                                JSONObject listas = new JSONObject("{}");
+                                listas.put("android", listaMovil);
+                                listas.put("desk", listaDesk);
+                                conn.send(listas.toString());
+                            }
                         }
                     }
-                };          
-
+                }
+            };
         } catch (Exception e) {
             e.printStackTrace();
         }
