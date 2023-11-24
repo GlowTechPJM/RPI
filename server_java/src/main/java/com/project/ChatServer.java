@@ -43,14 +43,16 @@ public class ChatServer extends WebSocketServer {
     @Override
     public void onStart() {
         // Quan el servidor s'inicia
+
         String wifiIP = metodos.getWifiIP();
         int port = getAddress().getPort();
+        proceso=executeDisplayCommandtexto(wifiIP);
+
         System.out.println("WebSockets server running at: ws://" + wifiIP + ":" + port);
         System.out.println("Type 'exit' to stop and exit server.");
         setConnectionLostTimeout(0);
         setConnectionLostTimeout(100);
 
-        proceso= executeDisplayCommandtexto(wifiIP);
     }
         
     
