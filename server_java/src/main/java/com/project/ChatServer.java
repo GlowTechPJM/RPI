@@ -277,6 +277,7 @@ public class ChatServer extends WebSocketServer {
                         for(String f : movil){
                             if (f.equals(clientId)){
                                 JSONObject listas = new JSONObject("{}");
+                                listas.put("action","listas");
                                 listas.put("android", listaMovil);
                                 listas.put("desk", listaDesk);
                                 conn.send(listas.toString());
