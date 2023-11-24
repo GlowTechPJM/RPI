@@ -385,7 +385,7 @@ public class ChatServer extends WebSocketServer {
             String command = "cd ~/dev/rpi-rgb-led-matrix && examples-api-use/scrolling-text-example -x 100 -y 10 -f ~/dev/bitmap-fonts/bitmap/cherry/cherry-10-b.bdf --led-cols=64 --led-rows=54 --led-slowdown-gpio=4 --led-no-hardware-pulse " + text;
             ProcessBuilder processBuilder = new ProcessBuilder("bash", "-c", command);
             proceso = processBuilder.start();
-    
+            System.out.println("estoy printando");
             InputStream inputStream = proceso.getInputStream();
             OutputStream outputStream = proceso.getOutputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
