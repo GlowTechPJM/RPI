@@ -269,7 +269,7 @@ public class ChatServer extends WebSocketServer {
                         System.out.println("no estas connectado no valida");
                     }
                 }
-            };          
+            };     //a     
             if (objRequest.has("connected")){
                 if (objRequest.has("cntPlatform")){ 
                     String listaMovil = String.join(";", movil);
