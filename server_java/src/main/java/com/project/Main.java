@@ -17,7 +17,7 @@ import java.lang.Process;
 public class Main {
     public static void main (String[] args) throws InterruptedException, IOException {
 
-        int port = 8080; 
+        int port = 8000; 
         String wifi = getWiFiIPAddress();
         System.out.println("Dirección IP WiFi: " + wifi);
 
