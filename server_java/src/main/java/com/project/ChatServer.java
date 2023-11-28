@@ -33,7 +33,7 @@ public class ChatServer extends WebSocketServer {
     static Process proceso;
     List<String> movil = new ArrayList<>();
     List<String> desk = new ArrayList<>();
-
+    String wifiIP = metodos.getWifiIP();
 
 
     public ChatServer (int port) {
@@ -44,7 +44,7 @@ public class ChatServer extends WebSocketServer {
     public void onStart() {
         // Quan el servidor s'inicia
 
-        String wifiIP = metodos.getWifiIP();
+       
         int port = getAddress().getPort();
         proceso=executeDisplayCommandtexto(wifiIP);
 
@@ -84,6 +84,11 @@ public class ChatServer extends WebSocketServer {
                     movilIterator.remove();
                     proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
+                else if(movil.size()==0 && desk.size()==0){
+                    proceso.destroy();
+                    proceso=executeDisplayCommandtexto(wifiIP);
+
+                }
             }
             Iterator<String> deskIterator = desk.iterator();
             while (deskIterator.hasNext()) {
@@ -91,6 +96,11 @@ public class ChatServer extends WebSocketServer {
                 if (clientId.equals(h)) {
                     deskIterator.remove();
                     proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
+                }
+                else if(movil.size()==0 && desk.size()==0){
+                    proceso.destroy();
+                    proceso=executeDisplayCommandtexto(wifiIP);
+
                 }
             
             }
