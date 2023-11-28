@@ -84,11 +84,7 @@ public class ChatServer extends WebSocketServer {
                     movilIterator.remove();
                     proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
-                else if(movil.size()==0 && desk.size()==0){
-                    proceso.destroy();
-                    proceso=executeDisplayCommandtexto(wifiIP);
-
-                }
+                
             }
             Iterator<String> deskIterator = desk.iterator();
             while (deskIterator.hasNext()) {
@@ -97,13 +93,13 @@ public class ChatServer extends WebSocketServer {
                     deskIterator.remove();
                     proceso = executeDisplayCommandtexto("conexion app: " + movil.size() + " conexion desktop: " + desk.size());
                 }
-                else if(movil.size()==0 && desk.size()==0){
+            
+            }
+            if(movil.size()==0 && desk.size()==0){
                     proceso.destroy();
                     proceso=executeDisplayCommandtexto(wifiIP);
 
                 }
-            
-            }
             System.out.println("Client disconnected '" + clientId + "'");
             JSONObject broadcas = new JSONObject("{}");
             broadcas.put("type", "broadcast");
